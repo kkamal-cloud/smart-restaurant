@@ -1,0 +1,282 @@
+.checkout-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.checkout-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.checkout-header h1 {
+  font-size: 2rem;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.checkout-header p {
+  color: #888;
+  font-size: 1rem;
+}
+
+.checkout-content {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #ff3838;
+  box-shadow: 0 0 0 3px rgba(255, 56, 56, 0.1);
+}
+
+.bill-summary-box {
+  background: #f8fafc;
+  padding: 1.2rem;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+}
+
+.bill-summary-box h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #2d3436;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #636e72;
+}
+
+.summary-row.total-row {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #2d3436;
+  margin-top: 10px;
+}
+
+.pay-counter-badge {
+  font-size: 0.85rem;
+  color: #2ed573;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+.place-order-btn-red {
+  background-color: #ff3838;
+  color: white;
+  border: none;
+  padding: 16px;
+  width: 100%;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.place-order-btn-red:hover {
+  background-color: #e02424;
+}
+
+.place-order-btn-red:active {
+  transform: scale(0.98);
+}
+
+.place-order-btn-red:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+/* Order Placed Screen - Dine POS Style */
+.order-placed-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+.order-placed-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px;
+  padding: 30px 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.placed-icon {
+  width: 50px;
+  height: 50px;
+  background: #2ed573;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0 auto 10px auto;
+}
+
+.placed-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #2d3436;
+  margin: 0 0 4px 0;
+}
+
+.placed-order-id {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+/* Token Red Banner Box */
+.token-banner-box {
+  background: #ff3838;
+  color: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.token-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  opacity: 0.9;
+  display: block;
+}
+
+.token-number {
+  font-size: 3rem;
+  font-weight: 900;
+  margin: 4px 0 0 0;
+  line-height: 1;
+}
+
+/* Summary Box */
+.placed-summary-box {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.placed-summary-box h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.placed-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.placed-summary-row.total-row {
+  font-size: 1.05rem;
+  color: #1e293b;
+  margin-top: 8px;
+}
+
+.summary-hr {
+  border: none;
+  border-top: 1px dashed #cbd5e1;
+  margin: 10px 0;
+}
+
+/* QR Code Section */
+.qr-verification-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-bottom: 25px;
+}
+
+.qr-hint {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2d3436;
+  margin: 10px 0 2px 0;
+}
+
+.qr-subhint {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* Actions */
+.placed-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.whatsapp-share-btn {
+  background: #25D366;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.back-menu-btn {
+  background: #f1f3f5;
+  color: #333;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.pay-counter-note {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
