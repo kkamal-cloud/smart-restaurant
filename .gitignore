@@ -25,8 +25,9 @@ dist-ssr
 
 # Environment Variables
 .env
-server/.env
-server/.env.example
+frontend/.env
+backend/.env
+backend/.env.example
 
 .env.local
 .env.development
