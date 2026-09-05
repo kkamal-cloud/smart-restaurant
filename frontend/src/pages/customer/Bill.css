@@ -1,0 +1,183 @@
+/* ─── Bill / Receipt Page — Epicurean Design System ────────────────────── */
+.bill-page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem var(--sp-pad-mobile);
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.bill-loading {
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--ep-on-surface-variant);
+}
+
+.bill-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-print {
+  background: var(--ep-tertiary-container);
+  color: var(--ep-on-tertiary-container);
+  border: none;
+  padding: 9px 22px;
+  border-radius: var(--r-full);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--t-fast);
+}
+.btn-print:hover { opacity: 0.85; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--ep-on-surface-variant);
+  border: 1.5px solid var(--ep-outline-variant);
+  padding: 9px 22px;
+  border-radius: var(--r-full);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--t-fast);
+}
+.btn-outline:hover {
+  background: var(--ep-surface-container);
+  border-color: var(--ep-outline);
+}
+
+/* ── Bill Card (receipt) ──────────────────────────────────────────────── */
+.bill-card {
+  background: var(--ep-surface-container-lowest);
+  padding: 2.5rem;
+  border-radius: var(--r-2xl);
+  box-shadow: var(--shadow-md);
+  color: var(--ep-on-surface);
+  font-family: 'Courier New', Courier, monospace;
+  max-width: 600px;
+  margin: 0 auto;
+  border: 1px solid var(--ep-outline-variant);
+}
+
+.bill-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px dashed var(--ep-outline-variant);
+  padding-bottom: 1.5rem;
+}
+
+.bill-header h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  margin: 0 0 8px 0;
+  color: var(--ep-primary);
+  letter-spacing: -0.02em;
+}
+
+.bill-header p {
+  margin: 4px 0;
+  color: var(--ep-on-surface-variant);
+  font-size: 0.875rem;
+}
+
+.bill-title {
+  margin-top: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--ep-on-surface);
+}
+
+.bill-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+.bill-info p { margin: 5px 0; }
+.info-right  { text-align: right; }
+
+/* Table */
+.bill-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+.bill-table th {
+  border-bottom: 2px solid var(--ep-on-surface);
+  padding: 10px 0;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.bill-table td {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--ep-outline-variant);
+  font-size: 0.9rem;
+}
+.align-left   { text-align: left; }
+.align-center { text-align: center; }
+.align-right  { text-align: right; }
+
+/* Totals */
+.bill-totals {
+  width: 60%;
+  margin-left: auto;
+  margin-bottom: 2rem;
+}
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+.grand-total {
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-top: 2px solid var(--ep-on-surface);
+  padding-top: 10px;
+  margin-top: 10px;
+  color: var(--ep-primary);
+}
+
+/* Footer */
+.bill-footer {
+  text-align: center;
+  border-top: 2px dashed var(--ep-outline-variant);
+  padding-top: 1.5rem;
+  color: var(--ep-on-surface-variant);
+  font-size: 0.875rem;
+}
+.bill-footer p { margin: 4px 0; }
+
+/* Print */
+@media print {
+  body * { visibility: hidden; }
+  #printable-bill, #printable-bill * { visibility: visible; }
+  #printable-bill {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%;
+    margin: 0; padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .no-print { display: none !important; }
+}
+
+@media (max-width: 576px) {
+  .bill-card { padding: 1.5rem; }
+  .bill-info { flex-direction: column; gap: 12px; }
+  .info-right { text-align: left; }
+  .bill-totals { width: 100%; }
+}
