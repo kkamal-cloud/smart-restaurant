@@ -1,5 +1,9 @@
 import { useEffect } from 'react'
+<<<<<<< HEAD
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+=======
+import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 import api from './api'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -27,8 +31,8 @@ import Reports from './pages/admin/Reports'
 
 // Kitchen Components
 import KitchenDashboard from './pages/kitchen/KitchenDashboard'
-
 import { CartProvider } from './context/CartContext'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
   const location = useLocation();
@@ -91,11 +95,21 @@ function App() {
           <Route path="/bill/:id" element={<Bill />} />
           <Route path="/scan/:token" element={<ScanTable />} />
           
-          {/* Admin Routes */}
+          {/* Staff Login Routes */}
+          <Route path="/login" element={<Navigate to="/admin/login" replace />} />
+          <Route path="/kitchen/login" element={<Navigate to="/admin/login" replace />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           
-          {/* Admin Protected Layout Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
+          {/* Admin Protected Layout Routes – only role='admin' allowed */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="menu" element={<MenuManagement />} />
             <Route path="categories" element={<CategoryManagement />} />
@@ -105,9 +119,16 @@ function App() {
             <Route path="stock" element={<StockManagement />} />
             <Route path="reports" element={<Reports />} />
           </Route>
-          
-          {/* Kitchen Route */}
-          <Route path="/kitchen" element={<KitchenDashboard />} />
+
+          {/* Kitchen Route – allowed for kitchen and admin */}
+          <Route
+            path="/kitchen"
+            element={
+              <ProtectedRoute requiredRole={['kitchen', 'admin']}>
+                <KitchenDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </main>
 

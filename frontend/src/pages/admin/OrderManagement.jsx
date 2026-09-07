@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
+import socket from '../../socket';
 import './AdminStyles.css';
 
 const OrderManagement = () => {
@@ -25,9 +26,37 @@ const OrderManagement = () => {
 
   useEffect(() => {
     fetchOrders();
-    // Poll every 10 seconds for new orders
+
+    socket.emit('joinAdmin');
+
+    const handleNewOrder = (newOrder) => {
+      setOrders(prev => {
+        const id = newOrder._id || newOrder.id;
+        const exists = prev.some(o => (o._id || o.id) === id);
+        if (exists) return prev;
+        return [newOrder, ...prev];
+      });
+    };
+
+    const handleStatusUpdate = ({ orderId, status }) => {
+      setOrders(prev =>
+        prev.map(o => {
+          const id = o._id || o.id;
+          return id === orderId ? { ...o, status: status.toLowerCase() } : o;
+        })
+      );
+    };
+
+    socket.on('order:new', handleNewOrder);
+    socket.on('order:statusUpdate', handleStatusUpdate);
+
     const interval = setInterval(fetchOrders, 10000);
-    return () => clearInterval(interval);
+
+    return () => {
+      socket.off('order:new', handleNewOrder);
+      socket.off('order:statusUpdate', handleStatusUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   const handleStatusChange = async (orderId, newStatus) => {

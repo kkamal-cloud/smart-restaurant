@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* ─── Admin Login Page — Indian Temple Style ─────────────────────────────── */
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 .admin-login-container {
   display: flex;
   justify-content: center;
   align-items: center;
+<<<<<<< HEAD
   min-height: calc(100vh - 160px); /* Account for navbar/footer roughly */
   background-color: #f1f2f6;
   padding: 2rem;
@@ -20,11 +25,75 @@
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+=======
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(201, 75, 44, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(154, 108, 0, 0.08) 0%, transparent 50%),
+    var(--ep-background);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Kolam-style corner decorations */
+.admin-login-container::before {
+  content: '❈';
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  font-size: 3rem;
+  color: var(--gold-light);
+  opacity: 0.25;
+}
+.admin-login-container::after {
+  content: '❈';
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  font-size: 3rem;
+  color: var(--ep-primary);
+  opacity: 0.12;
+}
+
+.admin-login-card {
+  background: var(--ep-surface-container-lowest);
+  width: 100%;
+  max-width: 440px;
+  padding: 2.8rem;
+  border-radius: var(--r-2xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--ep-outline-variant);
+  animation: loginSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top gold border on card */
+.admin-login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    var(--ep-primary) 0%,
+    var(--gold) 50%,
+    var(--ep-primary) 100%
+  );
+}
+
+@keyframes loginSlideIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .admin-login-header {
   text-align: center;
   margin-bottom: 2rem;
+<<<<<<< HEAD
 }
 
 .admin-login-header h2 {
@@ -50,12 +119,71 @@
 
 .admin-login-form .form-group {
   margin-bottom: 1.5rem;
+=======
+  padding-top: 8px;
+}
+
+/* Logo / Icon */
+.admin-login-header .login-logo {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.admin-login-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--ep-primary);
+  letter-spacing: 0.04em;
+  margin: 0 0 8px 0;
+}
+
+.admin-login-header p {
+  color: var(--ep-on-surface-variant);
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+/* Divider */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--ep-outline-variant), transparent);
+}
+
+.login-error {
+  background: var(--ep-error-container);
+  color: var(--ep-on-error-container);
+  padding: 12px 16px;
+  border-radius: var(--r-lg);
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+  font-weight: 500;
+  border-left: 3px solid var(--ep-error);
+}
+
+.admin-login-form .form-group {
+  margin-bottom: 1.25rem;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   display: flex;
   flex-direction: column;
 }
 
 .admin-login-form label {
   font-weight: 600;
+<<<<<<< HEAD
   margin-bottom: 0.5rem;
   color: #57606f;
 }
@@ -67,10 +195,28 @@
   font-size: 1rem;
   transition: all 0.2s;
   background-color: #f8f9fa;
+=======
+  margin-bottom: 6px;
+  color: var(--ep-on-surface-variant);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.admin-login-form input {
+  padding: 11px 14px;
+  border: 1.5px solid var(--ep-outline-variant);
+  border-radius: var(--r-lg);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ep-on-surface);
+  background: var(--ep-surface-container-low);
+  transition: border-color 0.2s, box-shadow 0.2s;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .admin-login-form input:focus {
   outline: none;
+<<<<<<< HEAD
   border-color: #1e90ff;
   background-color: #ffffff;
   box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
@@ -97,10 +243,48 @@
 .login-btn:active {
   transform: scale(0.98);
 }
+=======
+  border-color: var(--ep-primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(201, 75, 44, 0.10);
+}
+
+.login-btn {
+  background: linear-gradient(135deg, var(--ep-primary) 0%, #A33A1F 100%);
+  color: #fff;
+  border: none;
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--r-lg);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--t-normal);
+  margin-top: 8px;
+  box-shadow: var(--shadow-primary);
+}
+
+.login-btn:hover {
+  background: linear-gradient(135deg, #A33A1F 0%, #8B2E16 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-hover);
+}
+
+.login-btn:active { transform: scale(0.98); }
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 
 .login-footer {
   text-align: center;
   margin-top: 1.5rem;
+<<<<<<< HEAD
   font-size: 0.85rem;
   color: #a4b0be;
+=======
+  font-size: 0.78rem;
+  color: var(--ep-outline);
+  letter-spacing: 0.02em;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }

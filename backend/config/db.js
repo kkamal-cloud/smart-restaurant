@@ -15,6 +15,7 @@ const connectDB = async () => {
       conn.connection.isReplicaSet = false;
       console.log(`MongoDB Replica Set check failed, assuming standalone: ${e.message}`);
     }
+<<<<<<< HEAD
 
     // Auto-seed if database tables/collections are empty
     try {
@@ -28,6 +29,8 @@ const connectDB = async () => {
     } catch (seedErr) {
       console.error('Auto-seed check failed:', seedErr.message);
     }
+=======
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);
@@ -35,4 +38,7 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995

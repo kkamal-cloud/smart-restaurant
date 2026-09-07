@@ -28,6 +28,14 @@ exports.login = async (req, res, next) => {
   }
 };
 
+exports.getMe = async (req, res, next) => {
+  try {
+    sendSuccess(res, { id: req.user._id, name: req.user.name, email: req.user.email, role: req.user.role });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getUsers = async (req, res, next) => {
   try {
     const users = await User.find().select('-password');

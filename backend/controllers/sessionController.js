@@ -12,7 +12,7 @@ exports.createOrJoinSession = async (req, res, next) => {
     const { error } = createSessionSchema.validate(req.body);
     if (error) return sendError(res, 'VALIDATION_ERROR', error.details[0].message);
 
-    const { tableId, joinToken, customerName, phone } = req.body;
+    const { tableId, joinToken, joinPin, customerName, phone, action } = req.body;
     
     const table = await RestaurantTable.findById(tableId);
     if (!table) return sendError(res, 'NOT_FOUND', 'Table not found', 404);
@@ -24,27 +24,45 @@ exports.createOrJoinSession = async (req, res, next) => {
     const activeSession = await CustomerSession.findOne({ table: tableId, status: 'active' });
 
     if (activeSession) {
-      if (joinToken && activeSession.joinToken === joinToken) {
-        // Friend joins existing session (shared bill)
-        customer = await Customer.create({ name: customerName, phone, session: activeSession._id });
-        activeSession.customerIds.push(customer._id);
-        await activeSession.save();
-        session = activeSession;
-      } else {
-        // Strangers at the same table (separate bill) -> create new session
+      if (action === 'separate') {
+        // User explicitly selected 'separate' session (separate bill)
+        const newPin = Math.floor(1000 + Math.random() * 9000).toString();
         session = await CustomerSession.create({
           table: tableId,
           joinToken: crypto.randomBytes(8).toString('hex'),
+          joinPin: newPin
         });
         customer = await Customer.create({ name: customerName, phone, session: session._id });
         session.customerIds.push(customer._id);
         await session.save();
+      } else {
+        // Default / 'join': Join existing active session so bill is shared!
+        if (!activeSession.joinPin) {
+          activeSession.joinPin = Math.floor(1000 + Math.random() * 9000).toString();
+          await activeSession.save();
+        }
+
+        if (joinPin) {
+          const providedPin = joinPin.toString().trim();
+          if (activeSession.joinPin && providedPin !== activeSession.joinPin && providedPin !== activeSession.joinToken) {
+            return sendError(res, 'BAD_REQUEST', 'Invalid 4-digit Table PIN. Please ask your friend at the table for their PIN.', 400);
+          }
+        }
+
+        customer = await Customer.create({ name: customerName, phone, session: activeSession._id });
+        if (!activeSession.customerIds.includes(customer._id)) {
+          activeSession.customerIds.push(customer._id);
+          await activeSession.save();
+        }
+        session = activeSession;
       }
     } else {
-      // Create new session
+      // Create new session with a random 4-digit PIN (e.g. 4829)
+      const generatedPin = Math.floor(1000 + Math.random() * 9000).toString();
       session = await CustomerSession.create({
         table: tableId,
         joinToken: crypto.randomBytes(8).toString('hex'),
+        joinPin: generatedPin
       });
       customer = await Customer.create({ name: customerName, phone, session: session._id });
       session.customerIds.push(customer._id);
@@ -60,6 +78,7 @@ exports.createOrJoinSession = async (req, res, next) => {
     sendSuccess(res, {
       sessionId: session._id,
       joinToken: session.joinToken,
+      joinPin: session.joinPin,
       customer: { id: customer._id, name: customer.name }
     }, 201);
 
@@ -77,6 +96,10 @@ exports.getSessionDetails = async (req, res, next) => {
     const session = await CustomerSession.findById(sessionId).populate('customerIds').populate('table');
     if (!session) {
       return sendError(res, 'NOT_FOUND', 'Session not found', 404);
+    }
+    if (!session.joinPin) {
+      session.joinPin = Math.floor(1000 + Math.random() * 9000).toString();
+      await session.save();
     }
     sendSuccess(res, session);
   } catch (err) {

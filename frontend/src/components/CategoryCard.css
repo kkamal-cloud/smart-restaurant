@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .category-card {
   background-color: var(--card-bg);
   border-radius: var(--radius-lg);
@@ -21,19 +22,87 @@
   margin: 0 auto 15px auto;
   border-radius: 50%;
   background-color: #f1f5f9;
+=======
+/* ─── Category Card – Indian Style ──────────────────────────────────────── */
+.category-card {
+  background: var(--ep-surface-container-lowest);
+  border-radius: var(--r-xl);
+  padding: 22px 16px 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 1.5px solid var(--ep-outline-variant);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gold top bar on hover */
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ep-primary), var(--gold));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.category-card:hover::before {
+  transform: scaleX(1);
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--gold-light);
+}
+
+.category-img-container {
+  width: 76px;
+  height: 76px;
+  border-radius: var(--r-full);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   overflow: hidden;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+=======
+  background: linear-gradient(135deg, var(--ep-surface-container), var(--ep-secondary-container));
+  box-shadow: var(--shadow-sm), 0 0 0 3px rgba(245, 217, 122, 0.2);
+  transition: transform 0.5s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+  border: 2px solid var(--ep-outline-variant);
+}
+
+.category-card:hover .category-img-container {
+  transform: scale(1.08);
+  box-shadow: var(--shadow-md), 0 0 0 4px rgba(201, 75, 44, 0.15);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .category-fallback {
   position: absolute;
+<<<<<<< HEAD
   font-size: 2.5rem;
   font-weight: bold;
   color: var(--primary-color);
+=======
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--ep-primary);
+  z-index: 0;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .category-image {
@@ -45,7 +114,17 @@
 }
 
 .category-title {
+<<<<<<< HEAD
   font-size: 1.15rem;
   color: var(--text-main);
   font-weight: 600;
+=======
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--ep-on-surface);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }

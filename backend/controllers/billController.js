@@ -18,10 +18,8 @@ exports.generateBill = async (req, res, next) => {
     if (!session) return sendError(res, 'NOT_FOUND', 'Session not found', 404);
     if (session.status !== 'active') return sendError(res, 'BAD_REQUEST', 'Session is already closed', 400);
 
-    // Get all served, unbilled orders for this session
-    // Wait, how do we know if it's unbilled? The Bill model has orderIds[array]. 
-    // We can find all orders for the session that are 'served'.
-    const servedOrders = await Order.find({ session: sessionId, status: 'served' });
+    // Get all active, non-cancelled orders for this session
+    const servedOrders = await Order.find({ session: sessionId, status: { $ne: 'cancelled' } });
     if (servedOrders.length === 0) {
       return sendError(res, 'BAD_REQUEST', 'No served orders to bill', 400);
     }

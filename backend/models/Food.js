@@ -8,6 +8,7 @@ const foodSchema = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
   image: { type: String },
   isAvailable: { type: Boolean, default: true },
+  isVeg: { type: Boolean, default: true },
 }, { timestamps: true });
 
 foodSchema.post('save', async function(doc, next) {

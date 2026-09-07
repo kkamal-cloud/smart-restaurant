@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
+import socket from '../../socket';
 import './OrderDetails.css';
 
 const OrderDetails = () => {
@@ -45,6 +46,23 @@ const OrderDetails = () => {
       }
     };
     fetchOrderDetails();
+
+    const sessionId = localStorage.getItem('sessionId');
+    if (sessionId) {
+      socket.emit('joinSession', sessionId);
+    }
+
+    const handleStatusUpdate = ({ orderId, status }) => {
+      if (orderId === id) {
+        setOrder(prev => (prev ? { ...prev, status } : prev));
+      }
+    };
+
+    socket.on('order:statusUpdate', handleStatusUpdate);
+
+    return () => {
+      socket.off('order:statusUpdate', handleStatusUpdate);
+    };
   }, [id]);
 
   if (loading) {

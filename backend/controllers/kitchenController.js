@@ -73,7 +73,10 @@ exports.updateOrderStatus = async (req, res, next) => {
     await order.save();
 
     const io = getIo();
-    io.to(`session:${order.session}`).emit('order:statusUpdate', { orderId: order._id, status: newStatus });
+    const updatePayload = { orderId: order._id, status: newStatus, order };
+    io.to(`session:${order.session}`).emit('order:statusUpdate', updatePayload);
+    io.to('kitchen').emit('order:statusUpdate', updatePayload);
+    io.to('admin').emit('order:statusUpdate', updatePayload);
 
     if (newStatus === 'served') {
        io.to(`session:${order.session}`).emit('session:billable', { message: 'Items served, bill can be generated.' });

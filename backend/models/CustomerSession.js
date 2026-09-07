@@ -5,6 +5,7 @@ const customerSessionSchema = new mongoose.Schema({
   customerIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Customer' }],
   status: { type: String, enum: ['active', 'closed'], default: 'active' },
   joinToken: { type: String, required: true, unique: true },
+  joinPin: { type: String },
   totalAmount: { type: Number, default: 0 },
 }, { timestamps: true });
 

@@ -1,10 +1,19 @@
+<<<<<<< HEAD
 .food-details-page {
   padding: 40px 20px 80px 20px;
+=======
+/* ─── Food Details Page — Epicurean Design System ───────────────────────── */
+.food-details-page {
+  padding: 40px 20px 80px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .back-btn {
   background: none;
   border: none;
+<<<<<<< HEAD
   color: var(--text-muted);
   font-size: 1.05rem;
   font-weight: 600;
@@ -17,31 +26,69 @@
 .back-btn:hover {
   color: var(--primary-color);
   transform: translateX(-5px);
+=======
+  color: var(--ep-on-surface-variant);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 28px;
+  transition: color 0.2s, transform 0.2s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.back-btn:hover {
+  color: var(--ep-primary);
+  transform: translateX(-4px);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .details-container {
   display: flex;
+<<<<<<< HEAD
   background-color: var(--card-bg);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
+=======
+  background: var(--ep-surface-container-lowest);
+  border-radius: var(--r-2xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--ep-outline-variant);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .details-image-section {
   flex: 1;
   min-height: 450px;
+<<<<<<< HEAD
   background-color: #f1f5f9;
+=======
+  background: var(--ep-surface-container);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
 }
 
 .details-image-fallback {
   font-size: 10rem;
   position: absolute;
   opacity: 0.2;
+=======
+  overflow: hidden;
+}
+
+.details-image-fallback {
+  font-size: 9rem;
+  position: absolute;
+  opacity: 0.15;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .details-image {
@@ -50,17 +97,28 @@
   object-fit: cover;
   position: relative;
   z-index: 1;
+<<<<<<< HEAD
 }
 
 .details-info-section {
   flex: 1.2;
   padding: 50px;
+=======
+  transition: transform 0.7s ease;
+}
+.details-container:hover .details-image { transform: scale(1.04); }
+
+.details-info-section {
+  flex: 1.2;
+  padding: 48px;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   display: flex;
   flex-direction: column;
 }
 
 .details-header {
   display: flex;
+<<<<<<< HEAD
   gap: 15px;
   margin-bottom: 20px;
 }
@@ -72,10 +130,26 @@
   border-radius: 30px;
   font-weight: 700;
   font-size: 0.9rem;
+=======
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.category-badge {
+  background: var(--ep-primary-fixed);
+  color: var(--ep-on-primary-fixed);
+  padding: 6px 16px;
+  border-radius: var(--r-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   text-transform: uppercase;
 }
 
 .availability-badge {
+<<<<<<< HEAD
   padding: 8px 18px;
   border-radius: 30px;
   font-weight: 700;
@@ -132,11 +206,73 @@
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-main);
+=======
+  padding: 6px 16px;
+  border-radius: var(--r-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.availability-badge.available {
+  background: rgba(135,180,119,0.2);
+  color: var(--ep-on-tertiary-container);
+}
+.availability-badge.unavailable {
+  background: var(--ep-error-container);
+  color: var(--ep-on-error-container);
+}
+
+.details-name {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--ep-on-surface);
+  margin-bottom: 10px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.details-rating {
+  font-size: 1rem;
+  color: var(--ep-on-surface-variant);
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.details-description {
+  font-size: 1rem;
+  color: var(--ep-on-surface-variant);
+  line-height: 1.75;
+  margin-bottom: 32px;
+}
+
+.details-price {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  color: var(--ep-primary);
+  font-weight: 700;
+  margin-bottom: 36px;
+}
+
+/* Quantity Selector */
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.quantity-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ep-on-surface);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .quantity-controls {
   display: flex;
   align-items: center;
+<<<<<<< HEAD
   background-color: var(--bg-color);
   border-radius: 40px;
   padding: 8px;
@@ -155,10 +291,32 @@
   transition: var(--transition);
   box-shadow: var(--shadow-sm);
   color: var(--text-main);
+=======
+  background: var(--ep-surface-container);
+  border-radius: var(--r-full);
+  padding: 6px;
+  gap: 4px;
+  border: 1.5px solid var(--ep-outline-variant);
+}
+
+.quantity-controls button {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--r-full);
+  border: none;
+  background: var(--ep-surface-container-lowest);
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--t-fast);
+  box-shadow: var(--shadow-xs);
+  color: var(--ep-on-surface);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   display: flex;
   align-items: center;
   justify-content: center;
 }
+<<<<<<< HEAD
 
 .quantity-controls button:hover {
   background-color: var(--primary-color);
@@ -187,11 +345,40 @@
 
 .btn-large:disabled {
   background-color: var(--text-muted);
+=======
+.quantity-controls button:hover {
+  background: var(--ep-primary);
+  color: var(--ep-on-primary);
+  box-shadow: var(--shadow-primary);
+}
+
+.quantity-controls span {
+  min-width: 48px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--ep-on-surface);
+}
+
+/* Add to Cart CTA */
+.details-actions { margin-top: auto; }
+
+.btn-large {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.05rem;
+  border-radius: var(--r-full);
+}
+.btn-large:disabled {
+  background: var(--ep-surface-container-high);
+  color: var(--ep-outline);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
+<<<<<<< HEAD
 @media (max-width: 900px) {
   .details-container {
     flex-direction: column;
@@ -205,4 +392,11 @@
   .details-name {
     font-size: 2.2rem;
   }
+=======
+/* Responsive */
+@media (max-width: 900px) {
+  .details-container { flex-direction: column; }
+  .details-image-section { min-height: 280px; }
+  .details-info-section { padding: 28px 20px; }
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import socket from '../../socket';
 import './KitchenDashboard.css';
 
 const KitchenDashboard = () => {
@@ -27,9 +28,38 @@ const KitchenDashboard = () => {
 
   useEffect(() => {
     fetchOrders();
-    // Poll for new kitchen orders every 5 seconds
-    const interval = setInterval(fetchOrders, 5000);
-    return () => clearInterval(interval);
+
+    socket.emit('joinKitchen');
+
+    const handleNewOrder = (newOrder) => {
+      setOrders(prev => {
+        const id = newOrder._id || newOrder.id;
+        const exists = prev.some(o => (o._id || o.id) === id);
+        if (exists) return prev;
+        return [newOrder, ...prev];
+      });
+      setIsLive(true);
+    };
+
+    const handleStatusUpdate = ({ orderId, status }) => {
+      setOrders(prev =>
+        prev.map(o => {
+          const id = o._id || o.id;
+          return id === orderId ? { ...o, status: status.toLowerCase() } : o;
+        })
+      );
+    };
+
+    socket.on('order:new', handleNewOrder);
+    socket.on('order:statusUpdate', handleStatusUpdate);
+
+    const interval = setInterval(fetchOrders, 10000);
+
+    return () => {
+      socket.off('order:new', handleNewOrder);
+      socket.off('order:statusUpdate', handleStatusUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   // Helper to change order status in API & local state
@@ -127,6 +157,14 @@ const KitchenDashboard = () => {
     );
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/admin/login');
+  };
+
   return (
     <div className="kitchen-dashboard-container">
       <header className="kitchen-header">
@@ -144,7 +182,7 @@ const KitchenDashboard = () => {
             {isLive ? '● Live API Connected' : '○ Mock Mode'}
           </span>
         </div>
-        <button className="k-logout-btn" onClick={() => navigate('/admin/login')}>Staff Exit</button>
+        <button className="k-logout-btn" onClick={handleLogout}>Staff Exit</button>
       </header>
 
       {loading ? (

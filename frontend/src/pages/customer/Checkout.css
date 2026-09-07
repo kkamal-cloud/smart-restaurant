@@ -1,13 +1,22 @@
+<<<<<<< HEAD
 .checkout-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem 1rem;
+=======
+/* ─── Checkout Page — Epicurean Design System ───────────────────────────── */
+.checkout-container {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2rem var(--sp-pad-mobile);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .checkout-header {
   text-align: center;
   margin-bottom: 2rem;
 }
+<<<<<<< HEAD
 
 .checkout-header h1 {
   font-size: 2rem;
@@ -69,10 +78,79 @@
   color: #2d3436;
 }
 
+=======
+.checkout-header h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--ep-on-surface);
+  margin-bottom: 6px;
+}
+.checkout-header p {
+  color: var(--ep-on-surface-variant);
+  font-size: 0.95rem;
+}
+
+.checkout-content {
+  background: var(--ep-surface-container-lowest);
+  border-radius: var(--r-2xl);
+  box-shadow: var(--shadow-sm);
+  padding: 2rem;
+  border: 1px solid var(--ep-outline-variant);
+}
+
+/* Form fields */
+.form-group {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--ep-on-surface-variant);
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+}
+.form-group input,
+.form-group textarea {
+  padding: 11px 14px;
+  border: 1.5px solid var(--ep-outline-variant);
+  border-radius: var(--r-lg);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ep-on-surface);
+  background: var(--ep-surface-container);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--ep-primary);
+  background: var(--ep-surface-container-lowest);
+  box-shadow: 0 0 0 3px rgba(87,0,19,0.10);
+}
+
+/* Bill Summary */
+.bill-summary-box {
+  background: var(--ep-surface-container);
+  padding: 18px;
+  border-radius: var(--r-xl);
+  margin: 1.5rem 0;
+  border: 1px solid var(--ep-outline-variant);
+}
+.bill-summary-box h3 {
+  font-family: var(--font-display);
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 1.05rem;
+  color: var(--ep-on-surface);
+}
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 .summary-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+<<<<<<< HEAD
   font-size: 0.95rem;
   color: #636e72;
 }
@@ -87,11 +165,26 @@
 .pay-counter-badge {
   font-size: 0.85rem;
   color: #2ed573;
+=======
+  font-size: 0.9rem;
+  color: var(--ep-on-surface-variant);
+}
+.summary-row.total-row {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ep-on-surface);
+  margin-top: 10px;
+}
+.pay-counter-badge {
+  font-size: 0.82rem;
+  color: var(--ep-on-tertiary-container);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   font-weight: 600;
   margin-top: 12px;
   margin-bottom: 0;
 }
 
+<<<<<<< HEAD
 .place-order-btn-red {
   background-color: #ff3838;
   color: white;
@@ -119,11 +212,44 @@
 }
 
 /* Order Placed Screen - Dine POS Style */
+=======
+/* Place Order Button */
+.place-order-btn-red {
+  background: var(--ep-primary);
+  color: var(--ep-on-primary);
+  border: none;
+  padding: 15px;
+  width: 100%;
+  border-radius: var(--r-full);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: var(--t-normal);
+  box-shadow: var(--shadow-primary);
+}
+.place-order-btn-red:hover {
+  background: var(--ep-primary-container);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-hover);
+}
+.place-order-btn-red:active { transform: scale(0.98); }
+.place-order-btn-red:disabled {
+  background: var(--ep-surface-container-high);
+  color: var(--ep-outline);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ── Order Placed Success Screen ─────────────────────────────────────── */
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 .order-placed-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 80vh;
+<<<<<<< HEAD
   padding: 20px;
 }
 
@@ -155,10 +281,46 @@
   font-size: 1.5rem;
   font-weight: 800;
   color: #2d3436;
+=======
+  padding: 24px;
+}
+
+.order-placed-card {
+  background: var(--ep-surface-container-lowest);
+  width: 100%;
+  max-width: 480px;
+  border-radius: var(--r-2xl);
+  padding: 2rem 1.5rem;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  border: 1px solid var(--ep-outline-variant);
+}
+
+.placed-icon {
+  width: 52px;
+  height: 52px;
+  background: var(--ep-tertiary-container);
+  color: var(--ep-on-tertiary-container);
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 auto 12px auto;
+}
+
+.placed-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ep-on-surface);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   margin: 0 0 4px 0;
 }
 
 .placed-order-id {
+<<<<<<< HEAD
   font-size: 0.85rem;
   color: #888;
   margin-bottom: 20px;
@@ -184,10 +346,38 @@
 .token-number {
   font-size: 3rem;
   font-weight: 900;
+=======
+  font-size: 0.82rem;
+  color: var(--ep-outline);
+  margin-bottom: 20px;
+}
+
+/* Token Banner */
+.token-banner-box {
+  background: var(--ep-primary);
+  color: var(--ep-on-primary);
+  padding: 16px 20px;
+  border-radius: var(--r-xl);
+  margin-bottom: 24px;
+}
+.token-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  display: block;
+}
+.token-number {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   margin: 4px 0 0 0;
   line-height: 1;
 }
 
+<<<<<<< HEAD
 /* Summary Box */
 .placed-summary-box {
   background: #f8fafc;
@@ -244,12 +434,65 @@
   font-size: 0.75rem;
   color: #888;
 }
+=======
+/* Placed Summary */
+.placed-summary-box {
+  background: var(--ep-surface-container);
+  padding: 16px;
+  border-radius: var(--r-xl);
+  text-align: left;
+  margin-bottom: 24px;
+  border: 1px solid var(--ep-outline-variant);
+}
+.placed-summary-box h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: var(--ep-on-surface-variant);
+  font-weight: 600;
+}
+.placed-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--ep-on-surface-variant);
+  margin-bottom: 6px;
+}
+.placed-summary-row.total-row {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ep-on-surface);
+  margin-top: 8px;
+}
+.summary-hr {
+  border: none;
+  border-top: 1px dashed var(--ep-outline-variant);
+  margin: 10px 0;
+}
+
+/* QR Section */
+.qr-verification-box {
+  background: var(--ep-surface-container-lowest);
+  border: 1px solid var(--ep-outline-variant);
+  padding: 16px;
+  border-radius: var(--r-xl);
+  display: inline-block;
+  margin-bottom: 24px;
+}
+.qr-hint {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ep-on-surface);
+  margin: 10px 0 2px 0;
+}
+.qr-subhint { font-size: 0.75rem; color: var(--ep-outline); }
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 
 /* Actions */
 .placed-actions {
   display: flex;
   flex-direction: column;
   gap: 10px;
+<<<<<<< HEAD
   margin-bottom: 15px;
 }
 
@@ -278,5 +521,40 @@
 .pay-counter-note {
   font-size: 0.8rem;
   color: #666;
+=======
+  margin-bottom: 14px;
+}
+.whatsapp-share-btn {
+  background: #25D366;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: var(--r-full);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--t-fast);
+}
+.whatsapp-share-btn:hover { opacity: 0.88; }
+
+.back-menu-btn {
+  background: var(--ep-surface-container);
+  color: var(--ep-on-surface);
+  border: 1.5px solid var(--ep-outline-variant);
+  padding: 12px;
+  border-radius: var(--r-full);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--t-fast);
+}
+.back-menu-btn:hover { background: var(--ep-surface-container-high); }
+
+.pay-counter-note {
+  font-size: 0.78rem;
+  color: var(--ep-outline);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   margin: 0;
 }

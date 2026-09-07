@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import './Login.css';
@@ -23,10 +23,13 @@ const Login = () => {
     try {
       const response = await api.post('/auth/login', credentials);
       if (response.data.success) {
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        const { token, user } = response.data.data;
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
         
-        if (response.data.data.user.role === 'kitchen') {
+        if (user.role === 'kitchen') {
           navigate('/kitchen');
         } else {
           navigate('/admin/dashboard');
@@ -42,8 +45,8 @@ const Login = () => {
     <div className="admin-login-container">
       <div className="admin-login-card">
         <div className="admin-login-header">
-          <h2>Admin Portal</h2>
-          <p>Sign in to manage SmartServe</p>
+          <h2>Staff Portal</h2>
+          <p>Sign in with your Admin or Kitchen credentials</p>
         </div>
 
         {error && <div className="login-error">{error}</div>}

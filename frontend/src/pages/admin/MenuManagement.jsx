@@ -20,6 +20,10 @@ const MenuManagement = () => {
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [isAvailable, setIsAvailable] = useState(true);
+<<<<<<< HEAD
+=======
+  const [isVeg, setIsVeg] = useState(true);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
 
@@ -37,7 +41,12 @@ const MenuManagement = () => {
           id: f._id,
           categoryName: f.category?.name || 'Uncategorized',
           categoryId: f.category?._id || f.category,
+<<<<<<< HEAD
           available: f.isAvailable !== false
+=======
+          available: f.isAvailable !== false,
+          isVeg: f.isVeg !== false
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
         }));
         setMenuItems(normalized);
       }
@@ -65,6 +74,10 @@ const MenuManagement = () => {
     setPrice('');
     setCategory(categories[0]?._id || '');
     setIsAvailable(true);
+<<<<<<< HEAD
+=======
+    setIsVeg(true);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
     setImageFile(null);
     setPreviewUrl('');
     setError('');
@@ -79,6 +92,10 @@ const MenuManagement = () => {
     setPrice(item.price);
     setCategory(item.categoryId || '');
     setIsAvailable(item.available);
+<<<<<<< HEAD
+=======
+    setIsVeg(item.isVeg !== false);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
     setImageFile(null);
     setPreviewUrl(getImageUrl(item.image));
     setError('');
@@ -109,7 +126,12 @@ const MenuManagement = () => {
         description,
         price: Number(price),
         category,
+<<<<<<< HEAD
         isAvailable
+=======
+        isAvailable,
+        isVeg
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
       };
 
       let savedFoodId = null;
@@ -193,6 +215,10 @@ const MenuManagement = () => {
               <tr>
                 <th>Image</th>
                 <th>Name</th>
+<<<<<<< HEAD
+=======
+                <th>Diet Type</th>
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
                 <th>Category</th>
                 <th>Price</th>
                 <th>Status</th>
@@ -214,6 +240,25 @@ const MenuManagement = () => {
                     />
                   </td>
                   <td style={{ fontWeight: '600', color: '#2f3542' }}>{item.name}</td>
+<<<<<<< HEAD
+=======
+                  <td>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '3px 8px',
+                      borderRadius: '12px',
+                      fontSize: '0.78rem',
+                      fontWeight: '700',
+                      border: item.isVeg ? '1.5px solid #1A5C3A' : '1.5px solid #C94B2C',
+                      color: item.isVeg ? '#1A5C3A' : '#C94B2C',
+                      backgroundColor: item.isVeg ? 'rgba(26,92,58,0.08)' : 'rgba(201,75,44,0.08)'
+                    }}>
+                      {item.isVeg ? '🟢 Veg' : '🔴 Non-Veg'}
+                    </span>
+                  </td>
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
                   <td>{item.categoryName}</td>
                   <td>₹{item.price}</td>
                   <td>
@@ -298,6 +343,33 @@ const MenuManagement = () => {
               </div>
 
               <div className="form-group">
+<<<<<<< HEAD
+=======
+                <label>Food Type (Diet)*</label>
+                <div style={{ display: 'flex', gap: '1.5rem', marginTop: '6px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: '600', color: '#1A5C3A' }}>
+                    <input 
+                      type="radio" 
+                      name="dietType" 
+                      checked={isVeg === true} 
+                      onChange={() => setIsVeg(true)} 
+                    />
+                    🟢 Pure Veg
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: '600', color: '#C94B2C' }}>
+                    <input 
+                      type="radio" 
+                      name="dietType" 
+                      checked={isVeg === false} 
+                      onChange={() => setIsVeg(false)} 
+                    />
+                    🔴 Non-Veg
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-group">
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
                 <label htmlFor="food-image">Food Image File</label>
                 <input 
                   type="file" 

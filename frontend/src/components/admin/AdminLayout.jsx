@@ -6,6 +6,10 @@ const AdminLayout = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/admin/login');
   };
 
@@ -23,11 +27,11 @@ const AdminLayout = () => {
           <NavLink to="/admin/stock" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>Stock</NavLink>
           <NavLink to="/admin/reports" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>Reports</NavLink>
           
-          <button 
-            onClick={handleLogout} 
-            style={{marginTop: 'auto', background: 'transparent', border: 'none', color: '#ff4757', cursor: 'pointer', padding: '1rem', textAlign: 'left', fontWeight: 'bold'}}
+          <button
+            onClick={handleLogout}
+            className="sidebar-logout"
           >
-            Logout
+            ↩ Logout
           </button>
         </nav>
       </aside>

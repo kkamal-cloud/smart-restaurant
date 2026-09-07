@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
+import socket from '../../socket';
 import './Orders.css';
 
 const Orders = () => {
@@ -10,12 +11,13 @@ const Orders = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) {
+      setLoading(false);
+      return;
+    }
+
     const fetchOrders = async () => {
-      const sessionId = localStorage.getItem('sessionId');
-      if (!sessionId) {
-        setLoading(false);
-        return;
-      }
       try {
         const response = await api.get(`/orders?sessionId=${sessionId}`);
         if (response.data.success) {
@@ -40,6 +42,23 @@ const Orders = () => {
     };
 
     fetchOrders();
+
+    socket.emit('joinSession', sessionId);
+
+    const handleNewOrder = () => fetchOrders();
+    const handleStatusUpdate = ({ orderId, status }) => {
+      setOrdersList(prev =>
+        prev.map(o => (o.id === orderId ? { ...o, status } : o))
+      );
+    };
+
+    socket.on('order:new', handleNewOrder);
+    socket.on('order:statusUpdate', handleStatusUpdate);
+
+    return () => {
+      socket.off('order:new', handleNewOrder);
+      socket.off('order:statusUpdate', handleStatusUpdate);
+    };
   }, []);
 
   // Helper function to assign classes based on status for styling

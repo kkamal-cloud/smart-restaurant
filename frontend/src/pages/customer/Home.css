@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Hero Section */
 .hero {
   padding: 80px 0;
@@ -10,10 +11,70 @@
   align-items: center;
   justify-content: space-between;
   gap: 40px;
+=======
+/* ─── Customer Home Page – Indian / Tamil Nadu Style ──────────────────── */
+
+/* ── Hero ──────────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 700px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--ep-surface-container);
+}
+
+/* Full-bleed hero image via pseudo-element */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right,
+      rgba(254, 248, 240, 0.97) 0%,
+      rgba(254, 248, 240, 0.90) 40%,
+      rgba(254, 248, 240, 0.60) 65%,
+      rgba(254, 248, 240, 0.15) 100%),
+    url('https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=1400&q=80') center/cover no-repeat;
+  z-index: 0;
+}
+
+/* Kolam-style top decorative bar */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg,
+    var(--ep-primary) 0%,
+    var(--gold) 33%,
+    var(--saffron) 50%,
+    var(--gold) 67%,
+    var(--ep-primary) 100%
+  );
+  z-index: 2;
+}
+
+.hero-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 90px 20px;
+  text-align: left;
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .hero-content {
   flex: 1;
+<<<<<<< HEAD
 }
 
 .hero-content h1 {
@@ -34,10 +95,63 @@
   margin-bottom: 35px;
   line-height: 1.6;
   max-width: 500px;
+=======
+  max-width: 600px;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  font-family: var(--font-body);
+  opacity: 1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+
+.hero-eyebrow::before,
+.hero-eyebrow::after {
+  content: '✦';
+  color: var(--gold);
+  font-size: 0.7rem;
+}
+
+.hero-content h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5vw, 3.6rem);
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  color: #1A0A00;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 8px rgba(255,255,255,0.6);
+}
+
+.hero-content h1 span {
+  color: var(--ep-primary);
+  text-shadow: 0 2px 6px rgba(201,75,44,0.25);
+}
+
+.hero-content p {
+  font-size: 1.08rem;
+  color: #2C1A0E;
+  line-height: 1.8;
+  margin-bottom: 36px;
+  max-width: 520px;
+  opacity: 1;
+  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.5);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .hero-buttons {
   display: flex;
+<<<<<<< HEAD
   gap: 20px;
 }
 
@@ -104,10 +218,97 @@
 /* Categories Section */
 .categories-section {
   padding: 100px 0;
+=======
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* Hero decorative side */
+.hero-image {
+  flex-shrink: 0;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .hero-image {
+    display: flex;
+  }
+}
+
+.hero-image-circle {
+  width: 380px;
+  height: 380px;
+  border-radius: var(--r-full);
+  background: linear-gradient(135deg, var(--ep-primary) 0%, var(--gold-dark) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9rem;
+  box-shadow: var(--shadow-primary), 0 0 0 12px rgba(201,75,44,0.1), 0 0 0 24px rgba(201,75,44,0.05);
+  border: 8px solid rgba(245, 217, 122, 0.4);
+  animation: float 7s ease-in-out infinite;
+  overflow: hidden;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-16px) rotate(1deg); }
+}
+
+/* ── Section Globals ──────────────────────────────────────────────────── */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 36px;
+}
+
+.section-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  color: var(--ep-on-surface);
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  position: relative;
+  padding-bottom: 14px;
+}
+
+.section-header h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ep-primary), var(--gold));
+  border-radius: 3px;
+}
+
+.see-all {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ep-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: gap 0.2s, color 0.2s;
+}
+.see-all:hover { gap: 8px; color: var(--gold); }
+
+/* ── Categories Section ───────────────────────────────────────────────── */
+.categories-section {
+  padding: 80px 0;
+  background: var(--ep-background);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .categories-grid {
   display: grid;
+<<<<<<< HEAD
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 30px;
 }
@@ -134,11 +335,100 @@
   border-radius: var(--radius-md);
   transition: var(--transition);
   border: 1px solid var(--border-color);
+=======
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+/* ── Features Section ────────────────────────────────────────────────── */
+.features-section {
+  background: var(--ep-surface-container);
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Kolam-like decorative corners */
+.features-section::before {
+  content: '❈';
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  font-size: 2rem;
+  color: var(--gold-light);
+  opacity: 0.3;
+}
+.features-section::after {
+  content: '❈';
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  font-size: 2rem;
+  color: var(--gold-light);
+  opacity: 0.3;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.1rem);
+  color: var(--ep-on-surface);
+  text-align: center;
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--ep-on-surface-variant);
+  font-size: 0.95rem;
+  max-width: 520px;
+  margin: 0 auto 48px auto;
+  line-height: 1.7;
+}
+
+.text-center { text-align: center; }
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 28px;
+}
+
+.feature-card {
+  background: var(--ep-surface-container-lowest);
+  border-radius: var(--r-xl);
+  padding: 40px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 1px solid var(--ep-outline-variant);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top accent bar */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ep-primary), var(--gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .feature-card:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-md);
+<<<<<<< HEAD
   border-color: var(--primary-color);
 }
 
@@ -159,11 +449,102 @@
 }
 
 /* Responsive Overrides */
+=======
+  border-color: var(--gold-light);
+}
+
+.feature-icon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 24px auto;
+  background: linear-gradient(135deg, var(--ep-surface-container), var(--ep-secondary-container));
+  border-radius: var(--r-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ep-primary);
+  font-size: 2rem;
+  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--ep-outline-variant);
+}
+
+.feature-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--ep-on-surface);
+  margin-bottom: 12px;
+  letter-spacing: 0.03em;
+}
+
+.feature-card p {
+  font-size: 0.88rem;
+  color: var(--ep-on-surface-variant);
+  line-height: 1.7;
+}
+
+/* ── CTA Strip ───────────────────────────────────────────────────────── */
+.cta-section {
+  background: linear-gradient(135deg, var(--ep-primary) 0%, #7B1C1C 60%, #3D1C08 100%);
+  padding: 80px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Mandala-like radial glow */
+.cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(245, 217, 122, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse at 10% 10%, rgba(255,153,51,0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 90%, rgba(255,153,51,0.08) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+/* Decorative top gold border */
+.cta-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold-light), var(--gold), var(--gold-light), transparent);
+}
+
+.cta-section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
+  color: #fff;
+  margin-bottom: 16px;
+  position: relative;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.cta-section h2 span {
+  color: var(--gold-light);
+}
+
+.cta-section p {
+  color: rgba(255, 240, 220, 0.82);
+  font-size: 1rem;
+  max-width: 500px;
+  margin: 0 auto 36px auto;
+  line-height: 1.7;
+  position: relative;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 @media (max-width: 900px) {
   .hero-container {
     flex-direction: column;
     text-align: center;
   }
+<<<<<<< HEAD
   .hero-content p {
     margin: 0 auto 30px auto;
   }
@@ -178,4 +559,10 @@
     height: 300px;
     font-size: 8rem;
   }
+=======
+  .hero-content p { margin-left: auto; margin-right: auto; }
+  .hero-buttons { justify-content: center; }
+  .hero-eyebrow { justify-content: center; }
+  .section-header h2::after { left: 50%; transform: translateX(-50%); }
+>>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }

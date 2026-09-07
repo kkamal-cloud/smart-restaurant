@@ -89,6 +89,8 @@ exports.createOrder = async (req, res, next) => {
     
     const io = getIo();
     io.to('kitchen').emit('order:new', populatedOrder);
+    io.to('admin').emit('order:new', populatedOrder);
+    io.to(`session:${sessionId}`).emit('order:new', populatedOrder);
 
     sendSuccess(res, populatedOrder, 201);
   } catch (err) {
@@ -153,13 +155,46 @@ exports.getOrderById = async (req, res, next) => {
       
     if (!order) return sendError(res, 'NOT_FOUND', 'Order not found', 404);
 
-    const items = await OrderItem.find({ order: order._id }).populate('food', 'name price');
-    const subtotal = items.reduce((sum, item) => sum + item.priceAtOrderTime * item.quantity, 0);
+    // If order has an active session, combine ALL non-cancelled orders in the session for a unified bill
+    let items = [];
+    if (order.session) {
+      const sessionOrders = await Order.find({ 
+        session: order.session._id, 
+        status: { $ne: 'cancelled' } 
+      });
+      const sessionOrderIds = sessionOrders.map(o => o._id);
+      items = await OrderItem.find({ order: { $in: sessionOrderIds } }).populate('food', 'name price');
+    } else {
+      items = await OrderItem.find({ order: order._id }).populate('food', 'name price');
+    }
+
+    // Aggregate items by food ID so identical items ordered by friends are merged into a clean list
+    const aggregatedItems = [];
+    const itemMap = new Map();
+
+    for (const item of items) {
+      const foodId = item.food?._id?.toString() || item._id.toString();
+      if (itemMap.has(foodId)) {
+        const existing = itemMap.get(foodId);
+        existing.quantity += item.quantity;
+      } else {
+        const newItem = {
+          _id: item._id,
+          food: item.food,
+          priceAtOrderTime: item.priceAtOrderTime,
+          quantity: item.quantity
+        };
+        itemMap.set(foodId, newItem);
+        aggregatedItems.push(newItem);
+      }
+    }
+
+    const subtotal = aggregatedItems.reduce((sum, item) => sum + item.priceAtOrderTime * item.quantity, 0);
     const tax = subtotal * 0.05;
     const total = subtotal + tax;
 
     const orderData = order.toObject();
-    orderData.items = items;
+    orderData.items = aggregatedItems;
     orderData.subtotal = subtotal;
     orderData.tax = tax;
     orderData.total = total;

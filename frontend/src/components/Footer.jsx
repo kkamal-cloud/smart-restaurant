@@ -7,7 +7,7 @@ function Footer() {
       <div className="container footer-container">
         <div className="footer-section">
           <h3>Smart<span>Serve</span></h3>
-          <p>Delicious food, delivered fast. Experience the best dining from the comfort of your home or right at your table.</p>
+          <p>Authentic South Indian food, served fresh and fast. Order right from your table and enjoy a great dining experience.</p>
         </div>
         
         <div className="footer-section">
@@ -21,9 +21,9 @@ function Footer() {
         
         <div className="footer-section">
           <h4>Contact Us</h4>
-          <p>📍 52C South Street , Sivakasi</p>
-          <p>📞 91+ 8300724846</p>
-          <p>✉️ SmartServe@gmail.com </p>
+          <p>📍 52C South Street, Sivakasi</p>
+          <p>📞 +91 8300726696</p>
+          <p>✉️ SmartServe@gmail.com</p>
         </div>
       </div>
       <div className="footer-bottom">

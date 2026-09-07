@@ -20,6 +20,7 @@ const createFoodSchema = Joi.object({
   price: Joi.number().min(0).required(),
   category: Joi.string().required(),
   isAvailable: Joi.boolean(),
+  isVeg: Joi.boolean(),
 });
 
 const updateFoodSchema = Joi.object({
@@ -28,6 +29,7 @@ const updateFoodSchema = Joi.object({
   price: Joi.number().min(0),
   category: Joi.string(),
   isAvailable: Joi.boolean(),
+  isVeg: Joi.boolean(),
 });
 
 module.exports = {
