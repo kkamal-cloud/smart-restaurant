@@ -1,9 +1,5 @@
 import { useEffect } from 'react'
-<<<<<<< HEAD
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
-=======
 import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 import api from './api'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'

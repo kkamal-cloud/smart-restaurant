@@ -1,22 +1,11 @@
-<<<<<<< HEAD
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-=======
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import api from '../api';
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 import './Navbar.css';
 
 function Navbar() {
   const { totalItems } = useCart();
-<<<<<<< HEAD
-
-  return (
-    <nav className="navbar glass">
-=======
   const location = useLocation();
   const [pin, setPin] = useState(localStorage.getItem('joinPin') || '');
   const [tableNo, setTableNo] = useState('');
@@ -53,7 +42,6 @@ function Navbar() {
 
   return (
     <nav className="navbar">
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
       <div className="container navbar-container">
         {/* Logo Section */}
         <Link to="/" className="navbar-logo">
@@ -68,13 +56,6 @@ function Navbar() {
         </ul>
 
         {/* Action Buttons */}
-<<<<<<< HEAD
-        <div className="navbar-actions">
-          <Link to="/cart" className="cart-icon">
-            🛒 <span className="cart-badge">{totalItems}</span>
-          </Link>
-          <Link to="/admin/login" className="btn btn-primary">Login</Link>
-=======
         <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {!isScanPage && pin && (
             <span 
@@ -97,7 +78,6 @@ function Navbar() {
           <Link to="/cart" className="cart-icon">
             🛒 <span className="cart-badge">{totalItems}</span>
           </Link>
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
         </div>
       </div>
     </nav>

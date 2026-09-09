@@ -1,32 +1,13 @@
-<<<<<<< HEAD
-.food-details-page {
-  padding: 40px 20px 80px 20px;
-=======
 /* ─── Food Details Page — Epicurean Design System ───────────────────────── */
 .food-details-page {
   padding: 40px 20px 80px 20px;
   max-width: 1100px;
   margin: 0 auto;
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .back-btn {
   background: none;
   border: none;
-<<<<<<< HEAD
-  color: var(--text-muted);
-  font-size: 1.05rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 30px;
-  transition: var(--transition);
-  padding: 0;
-}
-
-.back-btn:hover {
-  color: var(--primary-color);
-  transform: translateX(-5px);
-=======
   color: var(--ep-on-surface-variant);
   font-size: 0.9rem;
   font-weight: 600;
@@ -41,46 +22,25 @@
 .back-btn:hover {
   color: var(--ep-primary);
   transform: translateX(-4px);
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .details-container {
   display: flex;
-<<<<<<< HEAD
-  background-color: var(--card-bg);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-color);
-=======
   background: var(--ep-surface-container-lowest);
   border-radius: var(--r-2xl);
   overflow: hidden;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--ep-outline-variant);
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .details-image-section {
   flex: 1;
   min-height: 450px;
-<<<<<<< HEAD
-  background-color: #f1f5f9;
-=======
   background: var(--ep-surface-container);
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-<<<<<<< HEAD
-}
-
-.details-image-fallback {
-  font-size: 10rem;
-  position: absolute;
-  opacity: 0.2;
-=======
   overflow: hidden;
 }
 
@@ -88,7 +48,6 @@
   font-size: 9rem;
   position: absolute;
   opacity: 0.15;
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .details-image {
@@ -97,13 +56,6 @@
   object-fit: cover;
   position: relative;
   z-index: 1;
-<<<<<<< HEAD
-}
-
-.details-info-section {
-  flex: 1.2;
-  padding: 50px;
-=======
   transition: transform 0.7s ease;
 }
 .details-container:hover .details-image { transform: scale(1.04); }
@@ -111,26 +63,12 @@
 .details-info-section {
   flex: 1.2;
   padding: 48px;
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   display: flex;
   flex-direction: column;
 }
 
 .details-header {
   display: flex;
-<<<<<<< HEAD
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.category-badge {
-  background-color: #fff0f0;
-  color: var(--primary-color);
-  padding: 8px 18px;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 0.9rem;
-=======
   gap: 10px;
   margin-bottom: 20px;
   flex-wrap: wrap;
@@ -144,69 +82,10 @@
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.04em;
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   text-transform: uppercase;
 }
 
 .availability-badge {
-<<<<<<< HEAD
-  padding: 8px 18px;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.availability-badge.available {
-  background-color: #e6fffa;
-  color: #047857;
-}
-
-.availability-badge.unavailable {
-  background-color: #fef2f2;
-  color: #b91c1c;
-}
-
-.details-name {
-  font-size: 3rem;
-  color: var(--text-main);
-  margin-bottom: 10px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.details-rating {
-  font-size: 1.2rem;
-  color: var(--text-muted);
-  margin-bottom: 30px;
-  font-weight: 600;
-}
-
-.details-description {
-  font-size: 1.15rem;
-  color: var(--text-muted);
-  line-height: 1.8;
-  margin-bottom: 40px;
-}
-
-.details-price {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-  font-weight: 700;
-  margin-bottom: 40px;
-}
-
-.quantity-selector {
-  display: flex;
-  align-items: center;
-  gap: 25px;
-  margin-bottom: 40px;
-}
-
-.quantity-label {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-main);
-=======
   padding: 6px 16px;
   border-radius: var(--r-full);
   font-size: 0.78rem;
@@ -266,32 +145,11 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--ep-on-surface);
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }
 
 .quantity-controls {
   display: flex;
   align-items: center;
-<<<<<<< HEAD
-  background-color: var(--bg-color);
-  border-radius: 40px;
-  padding: 8px;
-  border: 1px solid var(--border-color);
-}
-
-.quantity-controls button {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  border: none;
-  background-color: var(--card-bg);
-  font-size: 1.4rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: var(--shadow-sm);
-  color: var(--text-main);
-=======
   background: var(--ep-surface-container);
   border-radius: var(--r-full);
   padding: 6px;
@@ -311,41 +169,10 @@
   transition: var(--t-fast);
   box-shadow: var(--shadow-xs);
   color: var(--ep-on-surface);
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   display: flex;
   align-items: center;
   justify-content: center;
 }
-<<<<<<< HEAD
-
-.quantity-controls button:hover {
-  background-color: var(--primary-color);
-  color: white;
-  transform: scale(1.05);
-}
-
-.quantity-controls span {
-  width: 50px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: var(--text-main);
-}
-
-.details-actions {
-  margin-top: auto;
-}
-
-.btn-large {
-  width: 100%;
-  padding: 20px;
-  font-size: 1.25rem;
-  border-radius: var(--radius-lg);
-}
-
-.btn-large:disabled {
-  background-color: var(--text-muted);
-=======
 .quantity-controls button:hover {
   background: var(--ep-primary);
   color: var(--ep-on-primary);
@@ -372,31 +199,14 @@
 .btn-large:disabled {
   background: var(--ep-surface-container-high);
   color: var(--ep-outline);
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-<<<<<<< HEAD
-@media (max-width: 900px) {
-  .details-container {
-    flex-direction: column;
-  }
-  .details-image-section {
-    min-height: 300px;
-  }
-  .details-info-section {
-    padding: 30px 20px;
-  }
-  .details-name {
-    font-size: 2.2rem;
-  }
-=======
 /* Responsive */
 @media (max-width: 900px) {
   .details-container { flex-direction: column; }
   .details-image-section { min-height: 280px; }
   .details-info-section { padding: 28px 20px; }
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 }

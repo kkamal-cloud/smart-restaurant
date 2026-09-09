@@ -5,17 +5,6 @@ import api from '../../api';
 const ScanTable = () => {
   const { token } = useParams();
   const navigate = useNavigate();
-<<<<<<< HEAD
-  
-  const [table, setTable] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  
-  const [customerName, setCustomerName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [joinToken, setJoinToken] = useState('');
-  const [isJoining, setIsJoining] = useState(false);
-=======
 
   const [table, setTable] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +14,6 @@ const ScanTable = () => {
   const [phone, setPhone] = useState('');
   const [joinPin, setJoinPin] = useState('');
   const [showPinInput, setShowPinInput] = useState(false);
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 
   useEffect(() => {
     resolveQRToken();
@@ -35,9 +23,6 @@ const ScanTable = () => {
     try {
       const response = await api.get(`/qr/${token}`);
       if (response.data.success) {
-<<<<<<< HEAD
-        setTable(response.data.data);
-=======
         const fetchedTable = response.data.data;
         setTable(fetchedTable);
 
@@ -55,7 +40,6 @@ const ScanTable = () => {
             })
             .catch(() => { });
         }
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
       } else {
         setError('Invalid QR code');
       }
@@ -67,41 +51,18 @@ const ScanTable = () => {
     }
   };
 
-<<<<<<< HEAD
-  const handleStartSession = async (e) => {
-    e.preventDefault();
-    if (!customerName.trim()) return;
-=======
   const handleStartSession = async (e, actionType = 'join') => {
     if (e) e.preventDefault();
     if (!customerName.trim()) {
       alert('Please enter your name');
       return;
     }
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
 
     try {
       const payload = {
         tableId: table.id,
         customerName,
         phone: phone || undefined,
-<<<<<<< HEAD
-      };
-
-      if (isJoining && joinToken) {
-        payload.joinToken = joinToken;
-      }
-
-      const response = await api.post('/sessions', payload);
-      
-      if (response.data.success) {
-        const { sessionId, joinToken: returnedJoinToken, customer } = response.data.data;
-        // Save session details to localStorage
-        localStorage.setItem('sessionId', sessionId);
-        localStorage.setItem('joinToken', returnedJoinToken);
-        localStorage.setItem('customer', JSON.stringify(customer));
-
-=======
         action: actionType
       };
 
@@ -129,7 +90,6 @@ const ScanTable = () => {
           alert(`Welcome ${customer.name}!\n\nYour 4-Digit Table PIN is: [ ${returnedJoinPin} ]\n\nFriends sitting at your table can enter this 4-digit PIN to join your single bill.`);
         }
 
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
         // Redirect to menu page
         navigate('/menu');
       }
@@ -153,13 +113,8 @@ const ScanTable = () => {
   if (error) {
     return (
       <div style={containerStyle}>
-<<<<<<< HEAD
-        <div style={{...cardStyle, borderColor: '#f44336'}}>
-          <h2 style={{color: '#f44336'}}>Error</h2>
-=======
         <div style={{ ...cardStyle, borderColor: '#f44336' }}>
           <h2 style={{ color: '#f44336' }}>Error</h2>
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
           <p>{error}</p>
           <button onClick={() => navigate('/')} style={btnStyle}>Go to Home</button>
         </div>
@@ -177,20 +132,6 @@ const ScanTable = () => {
 
         {!table.isAvailable && (
           <div style={alertWarningStyle}>
-<<<<<<< HEAD
-            This table currently has an active session. If you are dining with friends, you can join their session using their Join Token. Otherwise, starting a new session will create a separate bill.
-          </div>
-        )}
-
-        <form onSubmit={handleStartSession}>
-          <div style={formGroupStyle}>
-            <label style={labelStyle}>Your Name *</label>
-            <input 
-              type="text" 
-              required 
-              value={customerName} 
-              onChange={(e) => setCustomerName(e.target.value)} 
-=======
             👥 <strong>Table {table.tableNumber} is currently occupied!</strong><br />
             You can join your friends to share a single bill, or start a new separate bill.
           </div>
@@ -204,7 +145,6 @@ const ScanTable = () => {
               required
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
               placeholder="Enter your name"
               style={inputStyle}
             />
@@ -212,54 +152,15 @@ const ScanTable = () => {
 
           <div style={formGroupStyle}>
             <label style={labelStyle}>Phone Number (Optional)</label>
-<<<<<<< HEAD
-            <input 
-              type="tel" 
-              value={phone} 
-              onChange={(e) => setPhone(e.target.value)} 
-=======
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
               placeholder="Enter phone number"
               style={inputStyle}
             />
           </div>
 
-<<<<<<< HEAD
-          {!table.isAvailable && (
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input 
-                  type="checkbox" 
-                  checked={isJoining} 
-                  onChange={(e) => setIsJoining(e.target.checked)} 
-                />
-                Join an existing session on this table?
-              </label>
-              
-              {isJoining && (
-                <div style={{ marginTop: '10px' }}>
-                  <label style={labelStyle}>Join Token *</label>
-                  <input 
-                    type="text" 
-                    required={isJoining} 
-                    value={joinToken} 
-                    onChange={(e) => setJoinToken(e.target.value)} 
-                    placeholder="Enter friend's Join Token"
-                    style={inputStyle}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-
-          <button type="submit" style={btnStyle}>
-            {isJoining ? 'Join Session & View Menu' : 'Start Dining & View Menu'}
-          </button>
-=======
           {!table.isAvailable ? (
             <>
               {showPinInput ? (
@@ -315,7 +216,6 @@ const ScanTable = () => {
               Start Dining & View Menu
             </button>
           )}
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
         </form>
       </div>
     </div>

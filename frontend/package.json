@@ -14,12 +14,8 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-<<<<<<< HEAD
-    "react-router-dom": "^7.18.2"
-=======
     "react-router-dom": "^7.18.2",
     "socket.io-client": "^4.8.3"
->>>>>>> 137886e9e2ab69827772f95310f4e215a0be8995
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
