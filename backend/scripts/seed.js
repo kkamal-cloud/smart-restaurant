@@ -8,10 +8,12 @@ const Category = require('../models/Category');
 const Food = require('../models/Food');
 const Stock = require('../models/Stock');
 
-const seedDB = async () => {
+const seedDB = async (shouldExit = true) => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('MongoDB Connected for Seeding');
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGO_URI);
+      console.log('MongoDB Connected for Seeding');
+    }
 
     await User.deleteMany({});
     await RestaurantTable.deleteMany({});
@@ -47,9 +49,6 @@ const seedDB = async () => {
     ]);
     console.log('Categories seeded');
 
-    // Mongoose post-save hook might run if we used create, but insertMany bypasses it. 
-    // Wait, the specification says "Auto-seed a stock record when a Food is created (post-save hook)."
-    // My menuController creates stock explicitly. So if I use insertMany here, I should also create stock manually here.
     const foods = await Food.insertMany([
       { name: 'Spring Rolls', price: 5, category: categories[0]._id },
       { name: 'Bruschetta', price: 6, category: categories[0]._id },
@@ -75,11 +74,20 @@ const seedDB = async () => {
     console.log('Foods and Stock seeded');
 
     console.log('Seeding Completed Successfully');
-    process.exit();
+    if (shouldExit) {
+      process.exit(0);
+    }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    console.error(`Seeding Error: ${error.message}`);
+    if (shouldExit) {
+      process.exit(1);
+    }
   }
 };
 
-seedDB();
+if (require.main === module) {
+  seedDB(true);
+}
+
+module.exports = seedDB;
+
