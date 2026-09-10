@@ -7,6 +7,8 @@ const Billing = () => {
   const [activeSessions, setActiveSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sessionSearch, setSessionSearch] = useState('');
+  const [billSearch, setBillSearch] = useState('');
   
   // Modals state
   const [showBillModal, setShowBillModal] = useState(false);
@@ -108,6 +110,48 @@ const Billing = () => {
     }
   };
 
+  const filteredActiveSessions = activeSessions.filter(session => {
+    if (!sessionSearch.trim()) return true;
+    const term = sessionSearch.toLowerCase().trim();
+    
+    const tableNum = String(session.table?.tableNumber || '1').toLowerCase();
+    const tableName1 = `table ${tableNum}`;
+    const tableName2 = `t${tableNum}`;
+    
+    const diners = (session.customerIds?.map(c => c.name).join(' ') || 'Anonymous Diner').toLowerCase();
+    
+    const token = (session.joinToken || '').toLowerCase();
+    
+    return tableNum.includes(term) || 
+           tableName1.includes(term) || 
+           tableName2.includes(term) || 
+           diners.includes(term) || 
+           token.includes(term);
+  });
+
+  const filteredBills = bills.filter(bill => {
+    if (!billSearch.trim()) return true;
+    const term = billSearch.toLowerCase().trim();
+    
+    const billId = (bill._id || '').slice(-6).toLowerCase();
+    
+    const tableNum = String(bill.session?.table?.tableNumber || '1').toLowerCase();
+    const tableName1 = `table ${tableNum}`;
+    const tableName2 = `t${tableNum}`;
+    
+    const amount = String((bill.grandTotal || 0).toFixed(0));
+    const status = bill.isPaid ? 'paid' : 'unpaid';
+    const method = (bill.method || '').toLowerCase();
+    
+    return billId.includes(term) ||
+           tableNum.includes(term) ||
+           tableName1.includes(term) ||
+           tableName2.includes(term) ||
+           amount.includes(term) ||
+           status.includes(term) ||
+           method.includes(term);
+  });
+
   if (loading && activeSessions.length === 0 && bills.length === 0) {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
@@ -131,15 +175,43 @@ const Billing = () => {
 
       {/* SECTION 1: Active Dining Sessions */}
       <div className="admin-card" style={{ marginBottom: '2.5rem' }}>
-        <h2>Active Dining Sessions</h2>
-        <p style={{ color: '#636e72', fontSize: '0.9rem', marginBottom: '1rem' }}>
-          These tables are currently occupied. You can generate a bill once they finish ordering.
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px' }}>
+          <div style={{ flex: '1 1 300px' }}>
+            <h2 style={{ marginTop: 0, marginBottom: '0.5rem' }}>Active Dining Sessions</h2>
+            <p style={{ color: '#636e72', fontSize: '0.9rem', marginBottom: 0 }}>
+              These tables are currently occupied. You can generate a bill once they finish ordering.
+            </p>
+          </div>
+          
+          <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: '400px' }}>
+            <span className="material-symbols-outlined" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#636e72', fontSize: '1.2rem', pointerEvents: 'none' }}>search</span>
+            <input 
+              type="text" 
+              placeholder="Search table, diner or token..." 
+              value={sessionSearch}
+              onChange={(e) => setSessionSearch(e.target.value)}
+              className="form-control"
+              style={{ paddingLeft: '35px', paddingRight: '35px', width: '100%', boxSizing: 'border-box', margin: 0 }}
+            />
+            {sessionSearch && (
+              <button 
+                onClick={() => setSessionSearch('')}
+                style={{ position: 'absolute', right: '5px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#636e72', padding: '0 5px', display: 'flex', alignItems: 'center' }}
+                title="Clear search"
+              >
+                &times;
+              </button>
+            )}
+          </div>
+        </div>
         
-        {activeSessions.length === 0 ? (
-          <p style={{ color: '#57606f', textAlign: 'center', padding: '1.5rem' }}>No active customer sessions right now.</p>
-        ) : (
-          <table className="admin-table">
+        <div style={{ marginTop: '1.5rem' }}>
+          {activeSessions.length === 0 ? (
+            <p style={{ color: '#57606f', textAlign: 'center', padding: '1.5rem' }}>No active customer sessions right now.</p>
+          ) : filteredActiveSessions.length === 0 ? (
+            <p style={{ color: '#57606f', textAlign: 'center', padding: '1.5rem' }}>No active dining sessions found.</p>
+          ) : (
+            <table className="admin-table">
             <thead>
               <tr>
                 <th>Table</th>
@@ -150,7 +222,7 @@ const Billing = () => {
               </tr>
             </thead>
             <tbody>
-              {activeSessions.map(session => (
+              {filteredActiveSessions.map(session => (
                 <tr key={session._id}>
                   <td><strong>Table {session.table?.tableNumber || '1'}</strong> ({session.table?.location})</td>
                   <td>{session.customerIds?.map(c => c.name).join(', ') || 'Anonymous Diner'}</td>
@@ -171,14 +243,46 @@ const Billing = () => {
               ))}
             </tbody>
           </table>
-        )}
+          )}
+        </div>
       </div>
 
       {/* SECTION 2: Generated Bills */}
       <div className="admin-card">
-        <h2>Billing & Invoices</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px', marginBottom: '1.5rem' }}>
+          <div style={{ flex: '1 1 300px' }}>
+            <h2 style={{ marginTop: 0, marginBottom: '0.5rem' }}>Billing & Invoices</h2>
+            <p style={{ color: '#636e72', fontSize: '0.9rem', marginBottom: 0 }}>
+              All generated bills and payment records.
+            </p>
+          </div>
+
+          <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: '400px' }}>
+            <span className="material-symbols-outlined" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#636e72', fontSize: '1.2rem', pointerEvents: 'none' }}>search</span>
+            <input 
+              type="text" 
+              placeholder="Search bill ID, table, amount or status..." 
+              value={billSearch}
+              onChange={(e) => setBillSearch(e.target.value)}
+              className="form-control"
+              style={{ paddingLeft: '35px', paddingRight: '35px', width: '100%', boxSizing: 'border-box', margin: 0 }}
+            />
+            {billSearch && (
+              <button 
+                onClick={() => setBillSearch('')}
+                style={{ position: 'absolute', right: '5px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#636e72', padding: '0 5px', display: 'flex', alignItems: 'center' }}
+                title="Clear search"
+              >
+                &times;
+              </button>
+            )}
+          </div>
+        </div>
+
         {bills.length === 0 ? (
           <p style={{ color: '#57606f', textAlign: 'center', padding: '2rem' }}>No bills found.</p>
+        ) : filteredBills.length === 0 ? (
+          <p style={{ color: '#57606f', textAlign: 'center', padding: '2rem' }}>No matching bills found.</p>
         ) : (
           <table className="admin-table">
             <thead>
@@ -192,7 +296,7 @@ const Billing = () => {
               </tr>
             </thead>
             <tbody>
-              {bills.map(bill => (
+              {filteredBills.map(bill => (
                 <tr key={bill._id}>
                   <td>#{bill._id.slice(-6).toUpperCase()}</td>
                   <td>Table {bill.session?.table?.tableNumber || '1'}</td>

@@ -18,6 +18,7 @@ const MenuManagement = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [costPrice, setCostPrice] = useState('');
   const [category, setCategory] = useState('');
   const [isAvailable, setIsAvailable] = useState(true);
   const [isVeg, setIsVeg] = useState(true);
@@ -65,6 +66,7 @@ const MenuManagement = () => {
     setName('');
     setDescription('');
     setPrice('');
+    setCostPrice('');
     setCategory(categories[0]?._id || '');
     setIsAvailable(true);
     setIsVeg(true);
@@ -80,6 +82,7 @@ const MenuManagement = () => {
     setName(item.name);
     setDescription(item.description || '');
     setPrice(item.price);
+    setCostPrice(item.costPrice || '');
     setCategory(item.categoryId || '');
     setIsAvailable(item.available);
     setIsVeg(item.isVeg !== false);
@@ -112,6 +115,7 @@ const MenuManagement = () => {
         name,
         description,
         price: Number(price),
+        costPrice: costPrice ? Number(costPrice) : 0,
         category,
         isAvailable,
         isVeg
@@ -201,6 +205,7 @@ const MenuManagement = () => {
                 <th>Diet Type</th>
                 <th>Category</th>
                 <th>Price</th>
+                <th>Cost Price</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -237,7 +242,8 @@ const MenuManagement = () => {
                     </span>
                   </td>
                   <td>{item.categoryName}</td>
-                  <td>₹{item.price}</td>
+                  <td><span className="table-price">₹{item.price}</span></td>
+                  <td><span className="table-price" style={{color: '#8B6340'}}>₹{item.costPrice || 0}</span></td>
                   <td>
                     <span className={`badge ${item.available ? 'badge-success' : 'badge-secondary'}`}>
                       {item.available ? 'Available' : 'Unavailable'}
@@ -279,6 +285,47 @@ const MenuManagement = () => {
               </div>
 
               <div className="form-group">
+                <label>Price (₹)*</label>
+                <input 
+                  type="number" 
+                  className="form-control"
+                  value={price} 
+                  onChange={(e) => setPrice(e.target.value)} 
+                  placeholder="Selling Price"
+                  min="0"
+                  required 
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Cost Price (₹)</label>
+                <input 
+                  type="number" 
+                  className="form-control"
+                  value={costPrice} 
+                  onChange={(e) => setCostPrice(e.target.value)} 
+                  placeholder="Production Cost"
+                  min="0"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="food-cat">Category*</label>
+                <select 
+                  id="food-cat" 
+                  className="form-control" 
+                  value={category} 
+                  onChange={(e) => setCategory(e.target.value)} 
+                  required
+                >
+                  <option value="" disabled>Select Category</option>
+                  {categories.map(cat => (
+                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group" style={{gridColumn: '1 / -1'}}>
                 <label htmlFor="food-desc">Description</label>
                 <textarea 
                   id="food-desc" 
