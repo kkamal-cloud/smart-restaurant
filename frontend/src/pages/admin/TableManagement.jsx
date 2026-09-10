@@ -147,13 +147,13 @@ const TableManagement = () => {
             <p>Location: {selectedTable.location} | Capacity: {selectedTable.capacity}</p>
             <div style={{ margin: '20px 0' }}>
               <QRCodeSVG 
-                value={`${import.meta.env.VITE_APP_URL || 'http://localhost:5173'}/scan/${selectedTable.qrToken}`} 
+                value={`${import.meta.env.VITE_APP_URL || window.location.origin}/scan/${selectedTable.qrToken}`} 
                 size={256} 
                 level={"H"}
                 includeMargin={true}
               />
             </div>
-            <p style={{ fontSize: '0.8rem', color: '#666' }}>URL: {import.meta.env.VITE_APP_URL || 'http://localhost:5173'}/scan/{selectedTable.qrToken}</p>
+            <p style={{ fontSize: '0.8rem', color: '#666' }}>URL: {import.meta.env.VITE_APP_URL || window.location.origin}/scan/{selectedTable.qrToken}</p>
             <button className="btn-edit" onClick={() => setShowQrModal(false)} style={{ marginTop: '15px' }}>Close</button>
           </div>
         </div>

@@ -171,7 +171,7 @@ const Checkout = () => {
           {/* QR Code Verification */}
           <div className="qr-verification-box">
             <QRCodeSVG 
-              value={`${import.meta.env.VITE_APP_URL || 'http://localhost:5173'}/bill/${completedOrder.id}`}
+              value={`${import.meta.env.VITE_APP_URL || window.location.origin}/bill/${completedOrder.id}`}
               size={140}
               level="H"
             />
