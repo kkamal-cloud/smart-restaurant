@@ -1,28 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import api from '../api';
+import { getStaffToken, getStaffUser, setStaffAuth, clearStaffAuth } from '../utils/authStorage';
 
 /**
- * ProtectedRoute – guards a route by checking:
- *  1. JWT token and user presence in localStorage
- *  2. Verification of token with backend API (/api/auth/me)
- *  3. Matching required role without invalidating token on mismatch
+ * ProtectedRoute – strictly guards routes based on required role ('admin' vs 'kitchen')
+ * - Admin route requires admin_token and user.role === 'admin'
+ * - Kitchen route requires kitchen_token and user.role === 'kitchen'
+ * Cross-role authentication reuse is strictly prohibited.
  */
 const ProtectedRoute = ({ children, requiredRole }) => {
-  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-  const userRaw = sessionStorage.getItem('user') || localStorage.getItem('user');
+  const role = requiredRole === 'kitchen' ? 'kitchen' : 'admin';
+
+  const token = getStaffToken(role);
+  const user = getStaffUser(role);
+
   const [isValidating, setIsValidating] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(token && userRaw));
-  const [userRole, setUserRole] = useState(() => {
-    try {
-      return userRaw ? JSON.parse(userRaw).role : null;
-    } catch {
-      return null;
-    }
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(token && user && user.role === role));
+  const [userRole, setUserRole] = useState(user?.role || null);
 
   useEffect(() => {
-    if (!token || !userRaw) {
+    if (!token || !user || user.role !== role) {
       setIsAuthenticated(false);
       setIsValidating(false);
       return;
@@ -30,43 +28,31 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
     let isMounted = true;
 
-    try {
-      const user = JSON.parse(userRaw);
-      setUserRole(user.role);
-    } catch {
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('user');
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setIsAuthenticated(false);
-      setIsValidating(false);
-      return;
-    }
-
-    // Verify token with backend
+    // Verify token with backend API (/api/auth/me)
     api.get('/auth/me')
       .then(res => {
         if (!isMounted) return;
         if (res.data?.success) {
-          const user = res.data.data;
-          sessionStorage.setItem('user', JSON.stringify(user));
-          localStorage.setItem('user', JSON.stringify(user));
-          setUserRole(user.role);
-          setIsAuthenticated(true);
+          const verifiedUser = res.data.data;
+          if (verifiedUser.role === role) {
+            setStaffAuth(role, token, verifiedUser);
+            setUserRole(verifiedUser.role);
+            setIsAuthenticated(true);
+          } else {
+            // Invalidate target role if response role mismatches
+            clearStaffAuth(role);
+            setIsAuthenticated(false);
+          }
         }
       })
       .catch((err) => {
         if (!isMounted) return;
-        // Only invalidate session if server explicitly returned 401
         if (err.response && err.response.status === 401) {
-          sessionStorage.removeItem('token');
-          sessionStorage.removeItem('user');
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          clearStaffAuth(role);
           setIsAuthenticated(false);
         } else {
-          // Keep authenticated if token format is fine
-          setIsAuthenticated(true);
+          // Keep local auth if role strictly matches
+          setIsAuthenticated(user.role === role);
         }
       })
       .finally(() => {
@@ -76,19 +62,12 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return () => {
       isMounted = false;
     };
-  }, [token, userRaw]);
+  }, [token, role]);
 
-  if (!token || !userRaw || (!isValidating && !isAuthenticated)) {
-    return <Navigate to="/admin/login" replace />;
-  }
+  const loginRedirectPath = role === 'kitchen' ? '/kitchen/login' : '/admin/login';
 
-  // Check role match if requiredRole is provided
-  if (requiredRole) {
-    const rolesArray = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
-    if (!userRole || !rolesArray.includes(userRole)) {
-      // Redirect to login page if role is missing or not authorized
-      return <Navigate to="/admin/login" replace />;
-    }
+  if (!token || !user || user.role !== role || (!isValidating && !isAuthenticated)) {
+    return <Navigate to={loginRedirectPath} replace />;
   }
 
   return children;

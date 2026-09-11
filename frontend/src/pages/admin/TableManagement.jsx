@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import api from '../../api';
 import './AdminStyles.css';
 
 const TableManagement = () => {
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // View QR Modal state
   const [showQrModal, setShowQrModal] = useState(false);
   const [selectedTable, setSelectedTable] = useState(null);
-  
-  // For adding a new table
+
+  // Add Table Modal state
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTable, setNewTable] = useState({ tableNumber: '', capacity: 2, location: '' });
+
+  // Regenerate Confirmation Modal state
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [tableToRegenerate, setTableToRegenerate] = useState(null);
 
   useEffect(() => {
     fetchTables();
@@ -19,10 +25,8 @@ const TableManagement = () => {
 
   const fetchTables = async () => {
     try {
-      // In a real app, you would pass the admin auth token
-      // We assume it's handled by interceptors in api.js if available
       const response = await api.get('/tables');
-      if (response.data.success) {
+      if (response.data?.success) {
         setTables(response.data.data);
       }
     } catch (error) {
@@ -36,7 +40,7 @@ const TableManagement = () => {
     e.preventDefault();
     try {
       const response = await api.post('/tables', newTable);
-      if (response.data.success) {
+      if (response.data?.success) {
         setTables([...tables, response.data.data]);
         setShowAddModal(false);
         setNewTable({ tableNumber: '', capacity: 2, location: '' });
@@ -47,15 +51,31 @@ const TableManagement = () => {
     }
   };
 
-  const handleGenerateQR = async (tableId) => {
+  const openRegenerateConfirm = (table) => {
+    setTableToRegenerate(table);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmRegenerate = async () => {
+    if (!tableToRegenerate) return;
     try {
-      const response = await api.post(`/qr/generate/${tableId}`);
-      if (response.data.success) {
-        alert('New QR Code generated successfully!');
-        fetchTables(); // Refresh to get new token
+      const response = await api.post(`/qr/generate/${tableToRegenerate._id}`);
+      if (response.data?.success) {
+        const updatedToken = response.data.data.qrToken;
+        setTables(prevTables =>
+          prevTables.map(t => (t._id === tableToRegenerate._id ? { ...t, qrToken: updatedToken } : t))
+        );
+        if (selectedTable && selectedTable._id === tableToRegenerate._id) {
+          setSelectedTable(prev => ({ ...prev, qrToken: updatedToken }));
+        }
+        alert(`New QR Code generated for Table ${tableToRegenerate.tableNumber}!`);
       }
     } catch (error) {
       console.error('Error generating QR:', error);
+      alert('Failed to regenerate QR code');
+    } finally {
+      setShowConfirmModal(false);
+      setTableToRegenerate(null);
     }
   };
 
@@ -64,15 +84,89 @@ const TableManagement = () => {
     setShowQrModal(true);
   };
 
+  // Download high-res printable QR card as PNG (Table-T1-QR.png)
+  const handleDownloadQR = () => {
+    if (!selectedTable) return;
+    const qrCanvasElement = document.getElementById('table-qr-canvas');
+    if (!qrCanvasElement) {
+      alert('QR Canvas not ready. Please try again.');
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 1050;
+
+    // White background
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Decorative Red & Gold border
+    ctx.strokeStyle = '#91280eff';
+    ctx.lineWidth = 14;
+    ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
+
+    ctx.strokeStyle = '#C8860A';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96);
+
+    // Brand Name
+    ctx.fillStyle = '#C94B2C';
+    ctx.font = 'bold 44px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('SMARTSERVE', canvas.width / 2, 130);
+
+    // Table Label
+    ctx.fillStyle = '#2C1A0E';
+    ctx.font = 'bold 36px sans-serif';
+    ctx.fillText(`TABLE ${selectedTable.tableNumber.toUpperCase()}`, canvas.width / 2, 200);
+
+    // Draw QR Code centered (500x500)
+    const qrSize = 500;
+    const qrX = (canvas.width - qrSize) / 2;
+    const qrY = 240;
+    ctx.drawImage(qrCanvasElement, qrX, qrY, qrSize, qrSize);
+
+    // Footer Text
+    ctx.fillStyle = '#5C3D1E';
+    ctx.font = '600 32px sans-serif';
+    ctx.fillText('Scan to View Menu', canvas.width / 2, 820);
+
+    // Location & Capacity
+    ctx.fillStyle = '#8B6340';
+    ctx.font = '24px sans-serif';
+    ctx.fillText(`Location: ${selectedTable.location} | Capacity: ${selectedTable.capacity}`, canvas.width / 2, 880);
+
+    // Trigger download with dynamic table number in filename
+    const link = document.createElement('a');
+    link.download = `Table-${selectedTable.tableNumber}-QR.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+
+  // Print QR Card
+  const handlePrintQR = () => {
+    window.print();
+  };
+
+  const getQrUrl = (token) => {
+    const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    return `${baseUrl}/scan/${token}`;
+  };
+
   return (
-    <div>
+    <div className="table-management-page">
       <div className="admin-header">
-        <h1>Table Management</h1>
+        <div>
+          <h1>Table Management</h1>
+          <p>Manage restaurant dining tables, download, and print table QR codes.</p>
+        </div>
         <button className="btn-add" onClick={() => setShowAddModal(true)}>+ Add Table</button>
       </div>
 
       {loading ? (
-        <p>Loading tables...</p>
+        <div style={{ textAlign: 'center', padding: '40px' }}>Loading tables...</div>
       ) : (
         <div className="admin-card">
           <table className="admin-table">
@@ -88,8 +182,8 @@ const TableManagement = () => {
             <tbody>
               {tables.map(table => (
                 <tr key={table._id}>
-                  <td>Table {table.tableNumber}</td>
-                  <td>{table.capacity}</td>
+                  <td><strong>Table {table.tableNumber}</strong></td>
+                  <td>{table.capacity} Persons</td>
                   <td>{table.location}</td>
                   <td>
                     <span className={`badge ${table.isAvailable ? 'badge-success' : 'badge-warning'}`}>
@@ -98,13 +192,15 @@ const TableManagement = () => {
                   </td>
                   <td>
                     <button className="btn-edit" onClick={() => viewQR(table)}>View QR</button>
-                    <button className="btn-edit" onClick={() => handleGenerateQR(table._id)} style={{ marginLeft: '8px' }}>Regenerate QR</button>
+                    <button className="btn-secondary" onClick={() => openRegenerateConfirm(table)} style={{ marginLeft: '6px' }}>
+                      🔄 Regenerate QR
+                    </button>
                   </td>
                 </tr>
               ))}
               {tables.length === 0 && (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center' }}>No tables found. Add a table to begin.</td>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '30px' }}>No tables found. Add a table to begin.</td>
                 </tr>
               )}
             </tbody>
@@ -114,25 +210,46 @@ const TableManagement = () => {
 
       {/* Add Table Modal */}
       {showAddModal && (
-        <div className="modal-overlay" style={modalOverlayStyle}>
-          <div className="modal-content" style={modalContentStyle}>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '420px' }}>
             <h2>Add New Table</h2>
-            <form onSubmit={handleAddTable}>
+            <form onSubmit={handleAddTable} style={{ marginTop: '15px' }}>
               <div style={{ marginBottom: '1rem' }}>
-                <label>Table Number</label>
-                <input type="text" required value={newTable.tableNumber} onChange={(e) => setNewTable({...newTable, tableNumber: e.target.value})} style={inputStyle} />
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>Table Number</label>
+                <input 
+                  type="text" 
+                  required 
+                  value={newTable.tableNumber} 
+                  onChange={(e) => setNewTable({...newTable, tableNumber: e.target.value})} 
+                  placeholder="e.g. T1 or 12"
+                  className="form-control"
+                />
               </div>
               <div style={{ marginBottom: '1rem' }}>
-                <label>Capacity</label>
-                <input type="number" min="1" required value={newTable.capacity} onChange={(e) => setNewTable({...newTable, capacity: e.target.value})} style={inputStyle} />
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>Capacity</label>
+                <input 
+                  type="number" 
+                  min="1" 
+                  required 
+                  value={newTable.capacity} 
+                  onChange={(e) => setNewTable({...newTable, capacity: e.target.value})} 
+                  className="form-control"
+                />
               </div>
               <div style={{ marginBottom: '1rem' }}>
-                <label>Location</label>
-                <input type="text" required value={newTable.location} onChange={(e) => setNewTable({...newTable, location: e.target.value})} style={inputStyle} />
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>Location</label>
+                <input 
+                  type="text" 
+                  required 
+                  value={newTable.location} 
+                  onChange={(e) => setNewTable({...newTable, location: e.target.value})} 
+                  placeholder="e.g. Window, Main Hall, Patio"
+                  className="form-control"
+                />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <button type="button" className="btn-delete" onClick={() => setShowAddModal(false)}>Cancel</button>
-                <button type="submit" className="btn-add">Save</button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+                <button type="button" className="btn-secondary" onClick={() => setShowAddModal(false)}>Cancel</button>
+                <button type="submit" className="btn-add">Save Table</button>
               </div>
             </form>
           </div>
@@ -141,40 +258,87 @@ const TableManagement = () => {
 
       {/* View QR Modal */}
       {showQrModal && selectedTable && (
-        <div className="modal-overlay" style={modalOverlayStyle}>
-          <div className="modal-content" style={{...modalContentStyle, textAlign: 'center'}}>
-            <h2>QR Code for Table {selectedTable.tableNumber}</h2>
-            <p>Location: {selectedTable.location} | Capacity: {selectedTable.capacity}</p>
-            <div style={{ margin: '20px 0' }}>
-              <QRCodeSVG 
-                value={`${import.meta.env.VITE_APP_URL || window.location.origin}/scan/${selectedTable.qrToken}`} 
-                size={256} 
-                level={"H"}
-                includeMargin={true}
-              />
+        <div className="modal-overlay">
+          <div className="modal-content qr-modal-content">
+            <div className="qr-modal-header">
+              <h2>SMARTSERVE</h2>
+              <h3>QR Code for Table {selectedTable.tableNumber}</h3>
+              <p className="qr-modal-meta">
+                Location: {selectedTable.location} | Capacity: {selectedTable.capacity}
+              </p>
             </div>
-            <p style={{ fontSize: '0.8rem', color: '#666' }}>URL: {import.meta.env.VITE_APP_URL || window.location.origin}/scan/{selectedTable.qrToken}</p>
-            <button className="btn-edit" onClick={() => setShowQrModal(false)} style={{ marginTop: '15px' }}>Close</button>
+
+            {/* Printable QR Card Wrapper */}
+            <div id="printable-qr-card" className="printable-qr-card">
+              <div className="printable-card-header">SMARTSERVE</div>
+              <div className="printable-table-title">TABLE {selectedTable.tableNumber}</div>
+              
+              <div className="qr-canvas-container">
+                <QRCodeCanvas 
+                  id="table-qr-canvas"
+                  value={getQrUrl(selectedTable.qrToken)} 
+                  size={220} 
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
+
+              <div className="printable-card-footer">Scan to View Menu</div>
+            </div>
+
+            {/* Responsive Long URL Display */}
+            <div className="qr-url-box">
+              <span className="qr-url-label">QR URL:</span>
+              <p className="qr-url-text">{getQrUrl(selectedTable.qrToken)}</p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="qr-modal-actions">
+              <button type="button" className="btn-primary" onClick={handleDownloadQR}>
+                📥 Download QR
+              </button>
+              <button type="button" className="btn-gold" onClick={handlePrintQR}>
+                🖨️ Print QR
+              </button>
+              <button type="button" className="btn-secondary" onClick={() => setShowQrModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Regenerate Confirmation Modal */}
+      {showConfirmModal && tableToRegenerate && (
+        <div className="modal-overlay">
+          <div className="modal-content confirm-modal-content">
+            <h2 style={{ color: '##070200f', margin: '0 0 10px 0' }}>
+              Regenerate QR for Table {tableToRegenerate.tableNumber}?
+            </h2>
+            <div className="confirm-warning-box" style={{ color: '#070200ff', background: '#ff3e3eff' }}>
+              ⚠️ <strong>Warning:</strong> The current QR code for Table {tableToRegenerate.tableNumber} will stop working immediately after regeneration. You will need to print and replace the physical QR code on the table.
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
+              <button 
+                type="button" 
+                className="btn-secondary" 
+                onClick={() => { setShowConfirmModal(false); setTableToRegenerate(null); }}
+              >
+                Cancel
+              </button>
+              <button 
+                type="button" 
+                className="btn-delete" 
+                onClick={handleConfirmRegenerate}
+              >
+                Regenerate QR
+              </button>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
-};
-
-// Basic inline styles for modals (you can move these to CSS later)
-const modalOverlayStyle = {
-  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-  backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
-  justifyContent: 'center', alignItems: 'center', zIndex: 1000
-};
-const modalContentStyle = {
-  backgroundColor: 'white', padding: '30px', borderRadius: '8px',
-  width: '100%', maxWidth: '400px'
-};
-const inputStyle = {
-  width: '100%', padding: '8px', marginTop: '5px',
-  border: '1px solid #ccc', borderRadius: '4px'
 };
 
 export default TableManagement;

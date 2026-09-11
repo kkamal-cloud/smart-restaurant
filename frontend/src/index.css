@@ -195,7 +195,10 @@ body {
   background: linear-gradient(135deg, var(--ep-primary) 0%, #A33A1F 100%);
   color: var(--ep-on-primary);
   box-shadow: var(--shadow-primary);
-  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 30px;
+  font-size: 14px;
+  padding:12px 20px;
+  border: 2px solid rgba(255,255,255,0.15);
 }
 .btn-primary:hover {
   background: linear-gradient(135deg, #A33A1F 0%, #8B2E16 100%);
@@ -215,6 +218,10 @@ body {
 }
 
 .btn-gold {
+  border-radius: 30px;
+  font-size: 14px;
+  padding:2px 20px;
+  border: 2px solid rgba(255,255,255,0.15);
   background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
   color: #fff;
   box-shadow: var(--shadow-gold);

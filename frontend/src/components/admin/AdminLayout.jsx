@@ -1,15 +1,13 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { clearStaffAuth } from '../../utils/authStorage';
 import '../../pages/admin/AdminStyles.css';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearStaffAuth('admin');
     navigate('/admin/login');
   };
 

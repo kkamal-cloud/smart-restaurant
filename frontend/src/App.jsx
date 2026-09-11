@@ -69,8 +69,12 @@ function App() {
     }
   }, [location.pathname, navigate]);
 
-  // Check if current path is an admin or kitchen route
-  const isStaffRoute = location.pathname.startsWith('/admin') || location.pathname.startsWith('/kitchen');
+  // Check if current path is an admin, kitchen or staff login route
+  const isStaffRoute = 
+    location.pathname.startsWith('/admin') || 
+    location.pathname.startsWith('/kitchen') || 
+    location.pathname === '/' || 
+    location.pathname === '/login';
 
   return (
     <CartProvider>
@@ -80,8 +84,11 @@ function App() {
       
       <main style={{ flex: 1 }}>
         <Routes>
+          {/* Staff Login on Root URL */}
+          <Route path="/" element={<AdminLogin />} />
+
           {/* Customer Routes */}
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/menu/:id" element={<FoodDetails />} />
           <Route path="/cart" element={<Cart />} />
@@ -89,11 +96,12 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/orders/:id" element={<OrderDetails />} />
           <Route path="/bill/:id" element={<Bill />} />
+          <Route path="/qr/:token" element={<ScanTable />} />
           <Route path="/scan/:token" element={<ScanTable />} />
           
           {/* Staff Login Routes */}
-          <Route path="/login" element={<Navigate to="/admin/login" replace />} />
-          <Route path="/kitchen/login" element={<Navigate to="/admin/login" replace />} />
+          <Route path="/login" element={<AdminLogin />} />
+          <Route path="/kitchen/login" element={<AdminLogin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           
           {/* Admin Protected Layout Routes – only role='admin' allowed */}
@@ -116,11 +124,11 @@ function App() {
             <Route path="reports" element={<Reports />} />
           </Route>
 
-          {/* Kitchen Route – allowed for kitchen and admin */}
+          {/* Kitchen Route – strictly role='kitchen' */}
           <Route
             path="/kitchen"
             element={
-              <ProtectedRoute requiredRole={['kitchen', 'admin']}>
+              <ProtectedRoute requiredRole="kitchen">
                 <KitchenDashboard />
               </ProtectedRoute>
             }

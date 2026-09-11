@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import socket from '../../socket';
+import { clearStaffAuth } from '../../utils/authStorage';
 import './KitchenDashboard.css';
 
 const KitchenDashboard = () => {
@@ -158,11 +159,8 @@ const KitchenDashboard = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/admin/login');
+    clearStaffAuth('kitchen');
+    navigate('/kitchen/login');
   };
 
   return (

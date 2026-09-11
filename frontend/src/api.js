@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getStaffToken, clearStaffAuth } from './utils/authStorage';
 
 const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api`, // Pointing to our backend
@@ -7,7 +8,15 @@ const api = axios.create({
 // Interceptor to attach JWT token or Session Join Token
 api.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem('token') || localStorage.getItem('token'); // for admin/staff
+    let token = null;
+    if (config.url?.includes('/kitchen')) {
+      token = getStaffToken('kitchen');
+    } else if (config.url?.includes('/admin')) {
+      token = getStaffToken('admin');
+    } else {
+      token = getStaffToken();
+    }
+
     const joinToken = localStorage.getItem('joinToken'); // for customers
 
     if (token) {
@@ -36,13 +45,18 @@ api.interceptors.response.use(
       const path = window.location.pathname;
 
       // Handle Admin & Kitchen 401 (Invalid/expired JWT token)
-      if (path.startsWith('/admin') || path.startsWith('/kitchen')) {
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('user');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+      if (path.startsWith('/admin')) {
+        clearStaffAuth('admin');
         if (path !== '/admin/login') {
           window.location.href = '/admin/login';
+        }
+        return Promise.reject(error);
+      }
+
+      if (path.startsWith('/kitchen')) {
+        clearStaffAuth('kitchen');
+        if (path !== '/kitchen/login' && path !== '/admin/login') {
+          window.location.href = '/kitchen/login';
         }
         return Promise.reject(error);
       }

@@ -282,3 +282,103 @@
   from { transform: translate(-50%, 80px); opacity: 0; }
   to   { transform: translate(-50%, 0);    opacity: 1; }
 }
+
+/* ─── Mobile Responsiveness (<= 768px) ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .dine-pos-menu-container {
+    padding: 16px 12px 100px 12px;
+  }
+
+  .dine-top-header {
+    padding: 12px 0;
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+
+  .restaurant-title {
+    font-size: 1.5rem;
+  }
+
+  .diet-pill-btn {
+    padding: 6px 14px;
+    font-size: 0.78rem;
+  }
+
+  .dine-search-box {
+    margin-bottom: 14px;
+  }
+
+  .dine-search-input {
+    padding: 10px 36px 10px 40px;
+    font-size: 0.88rem;
+  }
+
+  .search-icon {
+    left: 12px;
+    font-size: 0.9rem;
+  }
+
+  .clear-search-btn {
+    right: 12px;
+  }
+
+  .category-scroll-wrapper {
+    margin-bottom: 16px;
+    gap: 8px;
+    padding-bottom: 6px;
+  }
+
+  .category-chip {
+    padding: 7px 14px;
+    font-size: 0.78rem;
+  }
+
+  /* Compact 2-column grid for mobile */
+  .dine-food-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .floating-cart-banner {
+    bottom: 16px;
+    width: calc(100% - 24px);
+    padding: 12px 16px;
+    border-radius: var(--r-lg);
+  }
+
+  .cart-item-count {
+    font-size: 0.85rem;
+  }
+
+  .cart-total-price {
+    font-size: 0.95rem;
+  }
+
+  .cart-nav-arrow {
+    padding: 5px 12px;
+    font-size: 0.78rem;
+  }
+}
+
+/* ─── Very Small Mobile (<= 360px) ────────────────────────────────────────── */
+@media (max-width: 360px) {
+  .dine-pos-menu-container {
+    padding: 12px 8px 100px 8px;
+  }
+
+  .dine-food-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .diet-pill-btn {
+    padding: 5px 10px;
+    font-size: 0.74rem;
+  }
+
+  .category-chip {
+    padding: 6px 10px;
+    font-size: 0.74rem;
+  }
+}
+
