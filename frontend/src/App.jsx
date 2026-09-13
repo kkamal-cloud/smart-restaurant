@@ -12,6 +12,7 @@ import Orders from './pages/customer/Orders'
 import OrderDetails from './pages/customer/OrderDetails'
 import Bill from './pages/customer/Bill'
 import ScanTable from './pages/customer/ScanTable'
+import SessionEnded from './pages/customer/SessionEnded'
 
 // Admin Components
 import AdminLogin from './pages/admin/Login'
@@ -38,7 +39,8 @@ function App() {
     const isCustomerRoute = 
       !location.pathname.startsWith('/admin') && 
       !location.pathname.startsWith('/kitchen') && 
-      location.pathname !== '/';
+      location.pathname !== '/' &&
+      location.pathname !== '/session-ended';
       
     const sessionId = localStorage.getItem('sessionId');
     const joinToken = localStorage.getItem('joinToken');
@@ -52,8 +54,7 @@ function App() {
             localStorage.removeItem('joinToken');
             localStorage.removeItem('customer');
             localStorage.removeItem('smartserve_cart');
-            alert('Your dining session has ended. Please scan the QR code to start a new session.');
-            navigate('/');
+            navigate('/session-ended');
           }
         })
         .catch(err => {
@@ -62,8 +63,7 @@ function App() {
             localStorage.removeItem('joinToken');
             localStorage.removeItem('customer');
             localStorage.removeItem('smartserve_cart');
-            alert('Your dining session has ended. Please scan the QR code to start a new session.');
-            navigate('/');
+            navigate('/session-ended');
           }
         });
     }
@@ -98,6 +98,7 @@ function App() {
           <Route path="/bill/:id" element={<Bill />} />
           <Route path="/qr/:token" element={<ScanTable />} />
           <Route path="/scan/:token" element={<ScanTable />} />
+          <Route path="/session-ended" element={<SessionEnded />} />
           
           {/* Staff Login Routes */}
           <Route path="/login" element={<AdminLogin />} />

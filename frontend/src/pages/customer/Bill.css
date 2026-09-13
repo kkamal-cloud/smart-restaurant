@@ -175,9 +175,20 @@
   .no-print { display: none !important; }
 }
 
-@media (max-width: 576px) {
-  .bill-card { padding: 1.5rem; }
-  .bill-info { flex-direction: column; gap: 12px; }
+@media (max-width: 768px) {
+  .bill-page-container { padding: 1rem 12px; max-width: 100%; box-sizing: border-box; }
+  .bill-card { padding: 1.2rem; max-width: 100%; border-radius: var(--r-xl); box-sizing: border-box; }
+  .bill-header h1 { font-size: 1.6rem; }
+  .bill-info { flex-direction: column; gap: 8px; }
   .info-right { text-align: left; }
   .bill-totals { width: 100%; }
+  .bill-table th, .bill-table td { font-size: 0.8rem; padding: 8px 0; }
 }
+
+@media (max-width: 360px) {
+  .bill-page-container { padding: 0.8rem 8px; }
+  .bill-card { padding: 1rem 8px; }
+  .bill-header h1 { font-size: 1.4rem; }
+  .bill-table th, .bill-table td { font-size: 0.75rem; padding: 6px 0; }
+}
+

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { QRCodeSVG } from 'qrcode.react';
 import api from '../../api';
+import { formatOrderNumber } from '../../utils/numberFormatters';
 import './Checkout.css';
 
 const Checkout = () => {
@@ -90,22 +91,24 @@ const Checkout = () => {
 
       if (response.data.success) {
         const createdOrder = response.data.data;
+        const formattedNum = formatOrderNumber(createdOrder.orderNumber, createdOrder._id);
         const orderData = {
           id: createdOrder._id,
-          token: createdOrder._id.slice(-4).toUpperCase(),
+          orderNumber: createdOrder.orderNumber,
+          token: formattedNum,
           customerName: formData.customerName || 'Customer',
           phoneNumber: formData.phoneNumber,
           tableNumber: formData.tableNumber || '1',
-          items: createdOrder.items.map(item => ({
+          items: (createdOrder.items || []).map(item => ({
             id: item._id,
-            name: item.food?.name || 'Item',
-            price: item.priceAtOrderTime || 0,
-            quantity: item.quantity
+            name: item.food?.name || item.name || 'Item',
+            price: item.priceAtOrderTime || item.price || 0,
+            quantity: item.quantity || 1
           })),
-          subtotal: createdOrder.subtotal,
-          tax: createdOrder.tax,
-          total: createdOrder.total,
-          date: createdOrder.createdAt
+          subtotal: createdOrder.subtotal || subtotal || 0,
+          tax: createdOrder.tax || tax || 0,
+          total: createdOrder.total || grandTotal || 0,
+          date: createdOrder.createdAt || new Date().toISOString()
         };
         setCompletedOrder(orderData);
         setOrderPlaced(true);
@@ -115,14 +118,16 @@ const Checkout = () => {
       }
     } catch (err) {
       console.error('Error placing order:', err);
-      alert(err.response?.data?.error?.message || 'Failed to place order');
+      alert(err.response?.data?.error?.message || err.message || 'Failed to place order');
     }
   };
 
+
   const shareOnWhatsApp = () => {
     if (!completedOrder) return;
+    const formattedNum = formatOrderNumber(completedOrder.orderNumber, completedOrder.id);
     const text = `*SmartServe Order Confirmation*\n` +
-                 `Order ID: ${completedOrder.id}\n` +
+                 `Order ID: ${formattedNum}\n` +
                  `Token: ${completedOrder.token}\n` +
                  `Table: ${completedOrder.tableNumber}\n` +
                  `Total Amount: ₹${completedOrder.total.toFixed(0)}\n` +
@@ -136,7 +141,7 @@ const Checkout = () => {
         <div className="order-placed-card">
           <div className="placed-icon">✓</div>
           <h2 className="placed-title">Order Placed!</h2>
-          <p className="placed-order-id">{completedOrder.id}</p>
+          <p className="placed-order-id">{formatOrderNumber(completedOrder.orderNumber, completedOrder.id)}</p>
 
           {/* Token Card */}
           <div className="token-banner-box">

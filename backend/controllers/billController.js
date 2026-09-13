@@ -6,6 +6,7 @@ const calculateBill = require('../utils/billCalculator');
 const { sendSuccess, sendError } = require('../utils/responseFormatter');
 const { createBillSchema } = require('../validations/billValidation');
 const { getIo } = require('../sockets/socketSetup');
+const { getNextSequence } = require('../utils/sequenceGenerator');
 
 exports.generateBill = async (req, res, next) => {
   try {
@@ -50,7 +51,9 @@ exports.generateBill = async (req, res, next) => {
     // Server-compute totals
     const totals = calculateBill(orderItems, taxRate, discount);
 
+    const billNumber = await getNextSequence('bill');
     const bill = await Bill.create({
+      billNumber,
       session: sessionId,
       orderIds,
       items: itemsForBill,
@@ -59,6 +62,7 @@ exports.generateBill = async (req, res, next) => {
       discount: totals.discount,
       grandTotal: totals.grandTotal,
     });
+
 
     // Update session total
     session.totalAmount += totals.grandTotal;

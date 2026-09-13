@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import socket from '../../socket';
+import { formatOrderNumber } from '../../utils/numberFormatters';
 import './OrderDetails.css';
 
 const OrderDetails = () => {
@@ -23,6 +24,7 @@ const OrderDetails = () => {
 
           const formatted = {
             id: found._id,
+            orderNumber: found.orderNumber,
             date: found.createdAt,
             status: found.status,
             customerName: customerName,
@@ -94,9 +96,10 @@ const OrderDetails = () => {
     <div className="order-details-container">
       <div className="order-details-header">
         <Link to="/orders" className="back-link">← Back to Orders</Link>
-        <h1>Order #{order.id}</h1>
+        <h1>Order {formatOrderNumber(order.orderNumber, order.id)}</h1>
         <p>{new Date(order.date).toLocaleString()}</p>
       </div>
+
 
       {/* Visual Status Tracker */}
       <div className="status-tracker">

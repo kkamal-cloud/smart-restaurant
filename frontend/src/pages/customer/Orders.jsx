@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import socket from '../../socket';
+import { formatOrderNumber } from '../../utils/numberFormatters';
 import './Orders.css';
 
 const Orders = () => {
@@ -23,6 +24,7 @@ const Orders = () => {
         if (response.data.success) {
           const formattedOrders = response.data.data.map(order => ({
             id: order._id,
+            orderNumber: order.orderNumber,
             date: order.createdAt,
             status: order.status,
             tableNumber: order.session?.table?.tableNumber || '1',
@@ -45,7 +47,23 @@ const Orders = () => {
 
     socket.emit('joinSession', sessionId);
 
-    const handleNewOrder = () => fetchOrders();
+    const handleNewOrder = (newOrder) => {
+      setOrdersList(prev => {
+        const orderId = newOrder._id || newOrder.id;
+        if (prev.some(o => o.id === orderId)) return prev;
+        const formatted = {
+          id: orderId,
+          orderNumber: newOrder.orderNumber,
+          date: newOrder.createdAt || newOrder.date,
+          status: newOrder.status,
+          tableNumber: newOrder.session?.table?.tableNumber || '1',
+          total: newOrder.total || 0,
+          items: newOrder.items || []
+        };
+        return [formatted, ...prev];
+      });
+    };
+
     const handleStatusUpdate = ({ orderId, status }) => {
       setOrdersList(prev =>
         prev.map(o => (o.id === orderId ? { ...o, status } : o))
@@ -110,7 +128,7 @@ const Orders = () => {
             <div key={order.id} className="order-card">
               <div className="order-card-header">
                 <div>
-                  <span className="order-id">Order #{order.id.slice(-6).toUpperCase()}</span>
+                  <span className="order-id">{formatOrderNumber(order.orderNumber, order.id)}</span>
                   <span className="order-date">
                     {new Date(order.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </span>

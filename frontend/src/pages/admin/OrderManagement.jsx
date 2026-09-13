@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
 import socket from '../../socket';
+import { formatOrderNumber } from '../../utils/numberFormatters';
 import './AdminStyles.css';
 
 const OrderManagement = () => {
@@ -116,7 +117,8 @@ const OrderManagement = () => {
             <tbody>
               {orders.map(order => (
                 <tr key={order._id}>
-                  <td>#{order._id.slice(-6).toUpperCase()}</td>
+                  <td>{formatOrderNumber(order.orderNumber, order._id)}</td>
+
                   <td>Table {order.session?.table?.tableNumber || '1'}</td>
                   <td>{order.session?.customerIds?.map(c => c.name).join(', ') || 'Customer'}</td>
                   <td>₹{(order.total || 0).toFixed(2)}</td>

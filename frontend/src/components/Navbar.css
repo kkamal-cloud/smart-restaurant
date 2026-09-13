@@ -99,7 +99,6 @@
 .navbar-links a.active::after {
   width: 100%;
 }
-
 /* Actions */
 .navbar-actions {
   display: flex;
@@ -152,20 +151,36 @@
   box-shadow: 0 2px 8px rgba(201, 75, 44, 0.4);
 }
 
+/* PIN Badge */
+.navbar-pin-badge {
+  font-size: 0.85rem;
+  background: rgba(214, 158, 46, 0.15);
+  color: #b7791f;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-weight: 700;
+  border: 1px solid rgba(214, 158, 46, 0.3);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
 /* Responsive Navbar */
 @media (max-width: 768px) {
   .navbar {
-    height: 62px;
+    height: 60px;
+  }
+  .navbar-pin-badge {
+    display:flex;
   }
   .navbar-links {
-    gap: 16px;
+    gap: 12px;
   }
   .navbar-links a {
     font-size: 0.75rem;
     padding-bottom: 2px;
   }
   .navbar-logo {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
   .cart-icon {
     width: 38px;
@@ -176,14 +191,34 @@
 
 @media (max-width: 480px) {
   .navbar-container {
-    padding: 0 12px;
+    padding: 0 10px;
   }
   .navbar-links {
-    gap: 10px;
+    gap: 8px;
   }
   .navbar-links a {
     font-size: 0.7rem;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
+  }
+  .navbar-logo {
+    font-size: 1.15rem;
   }
 }
+
+@media (max-width: 360px) {
+  .navbar-container {
+    padding: 0 8px;
+  }
+  .navbar-links {
+    gap: 6px;
+  }
+  .navbar-links a {
+    font-size: 0.65rem;
+    letter-spacing: 0;
+  }
+  .navbar-logo {
+    font-size: 1.05rem;
+  }
+}
+
 

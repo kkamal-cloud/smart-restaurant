@@ -288,3 +288,21 @@
   color: var(--ep-outline);
   margin: 0;
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .checkout-container { padding: 1rem 12px; max-width: 100%; box-sizing: border-box; }
+  .checkout-content { padding: 1.2rem; border-radius: var(--r-xl); }
+  .checkout-header h1 { font-size: 1.6rem; }
+  .token-number { font-size: 2.2rem; }
+  .order-placed-container { padding: 12px; min-height: 70vh; }
+  .order-placed-card { padding: 1.2rem 1rem; border-radius: var(--r-xl); }
+}
+
+@media (max-width: 360px) {
+  .checkout-container { padding: 0.8rem 8px; }
+  .checkout-content { padding: 1rem 8px; }
+  .checkout-header h1 { font-size: 1.4rem; }
+  .token-number { font-size: 1.8rem; }
+}
+

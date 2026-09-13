@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const billSchema = new mongoose.Schema({
+  billNumber: { type: Number, unique: true, sparse: true },
   session: { type: mongoose.Schema.Types.ObjectId, ref: 'CustomerSession', required: true },
   orderIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
   items: [{

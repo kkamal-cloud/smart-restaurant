@@ -6,6 +6,7 @@ const Food = require('../models/Food');
 const { sendSuccess, sendError } = require('../utils/responseFormatter');
 const { createOrderSchema } = require('../validations/orderValidation');
 const { getIo } = require('../sockets/socketSetup');
+const { getNextSequence } = require('../utils/sequenceGenerator');
 
 exports.createOrder = async (req, res, next) => {
   const useTransaction = mongoose.connection.isReplicaSet;
@@ -33,7 +34,9 @@ exports.createOrder = async (req, res, next) => {
       return sendError(res, 'FORBIDDEN', 'Session mismatch', 403);
     }
 
-    const newOrder = await Order.create([{ session: sessionId, specialInstructions }], { session: session || undefined });
+    const orderNumber = await getNextSequence('order', { session: session || undefined });
+    const newOrder = await Order.create([{ session: sessionId, specialInstructions, orderNumber }], { session: session || undefined });
+
 
     for (const item of items) {
       let foodQuery = Food.findById(item.foodId);

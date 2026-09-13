@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
+import { formatOrderNumber } from '../../utils/numberFormatters';
 import './AdminStyles.css';
 
 const Dashboard = () => {
@@ -35,6 +36,7 @@ const Dashboard = () => {
           const orders = ordersRes.data.data.slice(-5).reverse();
           setRecentOrders(orders.map(order => ({
             id: order._id,
+            orderNumber: order.orderNumber,
             table: order.session?.table?.tableNumber || '1',
             amount: order.total || 0,
             status: order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Pending'
@@ -91,7 +93,8 @@ const Dashboard = () => {
             <tbody>
               {recentOrders.map(order => (
                 <tr key={order.id}>
-                  <td>#{order.id.slice(-6).toUpperCase()}</td>
+                  <td>{formatOrderNumber(order.orderNumber, order.id)}</td>
+
                   <td>Table {order.table}</td>
                   <td>₹{order.amount.toFixed(2)}</td>
                   <td>

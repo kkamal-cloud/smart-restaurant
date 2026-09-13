@@ -240,8 +240,21 @@
   box-shadow: var(--shadow-primary-hover);
 }
 
-@media (max-width: 576px) {
-  .order-details-container { padding: 1rem; }
-  .status-step { padding: 0 6px; }
-  .step-label { font-size: 0.7rem; }
+@media (max-width: 768px) {
+  .order-details-container { padding: 1rem 12px; max-width: 100%; box-sizing: border-box; }
+  .status-tracker { padding: 1.2rem 10px; border-radius: var(--r-xl); }
+  .status-tracker::before { left: 8%; right: 8%; }
+  .status-step { padding: 0 4px; }
+  .step-circle { width: 32px; height: 32px; font-size: 0.85rem; }
+  .step-label { font-size: 0.68rem; text-align: center; }
+  .order-info-card, .order-items-card { padding: 1.2rem; border-radius: var(--r-xl); }
 }
+
+@media (max-width: 360px) {
+  .order-details-container { padding: 0.8rem 8px; }
+  .status-tracker { padding: 1rem 6px; }
+  .step-circle { width: 28px; height: 28px; font-size: 0.78rem; }
+  .step-label { font-size: 0.6rem; }
+  .order-info-card, .order-items-card { padding: 1rem 10px; }
+}
+

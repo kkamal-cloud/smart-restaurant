@@ -405,13 +405,14 @@ exports.createExpense = async (req, res, next) => {
 
 exports.updateExpense = async (req, res, next) => {
   try {
-    const expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after', runValidators: true });
     if (!expense) return sendError(res, 'NOT_FOUND', 'Expense not found', 404);
     sendSuccess(res, expense);
   } catch (err) {
     next(err);
   }
 };
+
 
 exports.deleteExpense = async (req, res, next) => {
   try {

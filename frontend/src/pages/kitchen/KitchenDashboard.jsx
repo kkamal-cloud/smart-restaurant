@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import socket from '../../socket';
 import { clearStaffAuth } from '../../utils/authStorage';
+import { formatOrderNumber } from '../../utils/numberFormatters';
 import './KitchenDashboard.css';
 
 const KitchenDashboard = () => {
@@ -104,14 +105,14 @@ const KitchenDashboard = () => {
           ) : (
             columnOrders.map(order => {
               const orderId = order._id || order.id;
-              const displayId = typeof orderId === 'string' && orderId.length > 8 ? orderId.substring(orderId.length - 6).toUpperCase() : orderId;
+              const displayId = formatOrderNumber(order.orderNumber, orderId);
               const tableNum = order.session?.table?.tableNumber || order.tableNumber || 'N/A';
               const orderTime = order.createdAt || order.date;
 
               return (
                 <div key={orderId} className="kitchen-order-card">
                   <div className="k-order-header">
-                    <span className="k-order-id">#{displayId}</span>
+                    <span className="k-order-id">{displayId}</span>
                     <span className="k-table-number">Table {tableNum}</span>
                   </div>
                   
@@ -167,7 +168,7 @@ const KitchenDashboard = () => {
     <div className="kitchen-dashboard-container">
       <header className="kitchen-header">
         <div className="kitchen-brand">
-          SmartServe <span>Kitchen Display System</span>
+          SmartServe <span>Kitchen</span>
           <span style={{ 
             fontSize: '0.75rem', 
             marginLeft: '15px', 
@@ -177,7 +178,7 @@ const KitchenDashboard = () => {
             color: isLive ? '#2ed573' : '#ff4757',
             border: `1px solid ${isLive ? '#2ed573' : '#ff4757'}`
           }}>
-            {isLive ? '● Live API Connected' : '○ Mock Mode'}
+            {isLive ? 'Live Mode' : 'Mock Mode'}
           </span>
         </div>
         <button className="k-logout-btn" onClick={handleLogout}>Staff Exit</button>

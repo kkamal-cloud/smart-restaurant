@@ -1,6 +1,8 @@
 /* ─── Menu Page – Indian / Tamil Nadu Style ──────────────────────────────── */
 .dine-pos-menu-container {
   max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 28px var(--sp-pad-mobile) 100px var(--sp-pad-mobile);
 }

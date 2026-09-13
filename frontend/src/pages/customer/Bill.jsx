@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { formatOrderNumber } from '../../utils/numberFormatters';
 import './Bill.css';
 
 const Bill = () => {
@@ -22,6 +23,7 @@ const Bill = () => {
 
           const formatted = {
             id: found._id,
+            orderNumber: found.orderNumber,
             date: found.createdAt,
             status: found.status,
             customerName: customerName,
@@ -91,7 +93,8 @@ const Bill = () => {
             <p><strong>Table No:</strong> {order.tableNumber}</p>
           </div>
           <div className="info-right">
-            <p><strong>Order ID:</strong> #{order.id}</p>
+            <p><strong>Order ID:</strong> {formatOrderNumber(order.orderNumber, order.id)}</p>
+
             <p><strong>Date:</strong> {new Date(order.date).toLocaleDateString()}</p>
             <p><strong>Time:</strong> {new Date(order.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
           </div>

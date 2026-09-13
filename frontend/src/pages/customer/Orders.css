@@ -169,8 +169,19 @@
   transform: translateY(-2px);
 }
 
-@media (max-width: 576px) {
-  .orders-container { padding: 1rem; }
-  .order-card-body { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .order-price-info { text-align: left; }
+@media (max-width: 768px) {
+  .orders-container { padding: 1rem 12px; max-width: 100%; box-sizing: border-box; }
+  .orders-header h1 { font-size: 1.6rem; }
+  .order-card-header { padding: 10px 14px; flex-wrap: wrap; gap: 6px; }
+  .order-card-body { padding: 12px 14px; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
+  .order-card-footer { padding: 10px 14px; }
+  .order-id { font-size: 0.9rem; }
+  .order-status-badge { font-size: 0.7rem; padding: 3px 10px; }
 }
+
+@media (max-width: 360px) {
+  .orders-container { padding: 0.8rem 8px; }
+  .order-card-header, .order-card-body, .order-card-footer { padding: 8px 10px; }
+  .order-total { font-size: 1.2rem; }
+}
+

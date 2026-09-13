@@ -225,31 +225,35 @@ const ScanTable = () => {
 // Styling
 const containerStyle = {
   display: 'flex', justifyContent: 'center', alignItems: 'center',
-  minHeight: '80vh', padding: '20px', backgroundColor: '#f9f9f9'
+  minHeight: '80vh', padding: '12px', backgroundColor: '#f9f9f9',
+  boxSizing: 'border-box', maxWidth: '100%'
 };
 const cardStyle = {
-  backgroundColor: 'white', padding: '40px 30px', borderRadius: '12px',
+  backgroundColor: 'white', padding: '24px 18px', borderRadius: '12px',
   boxShadow: '0 4px 20px rgba(0,0,0,0.08)', width: '100%', maxWidth: '450px',
-  border: '1px solid #eee'
+  border: '1px solid #eee', boxSizing: 'border-box'
 };
 const formGroupStyle = {
-  marginBottom: '20px'
+  marginBottom: '16px', width: '100%', boxSizing: 'border-box'
 };
 const labelStyle = {
-  display: 'block', marginBottom: '8px', fontWeight: '500', color: '#333'
+  display: 'block', marginBottom: '6px', fontWeight: '500', color: '#333', fontSize: '0.9rem'
 };
 const inputStyle = {
   width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc',
-  fontSize: '1rem', boxSizing: 'border-box'
+  fontSize: '0.95rem', boxSizing: 'border-box'
 };
 const btnStyle = {
   width: '100%', padding: '14px', borderRadius: '8px', border: 'none',
-  backgroundColor: '#ff6b6b', color: 'white', fontWeight: '600', fontSize: '1rem',
-  cursor: 'pointer', marginTop: '10px', boxShadow: '0 4px 6px rgba(255,107,107,0.2)'
+  backgroundColor: '#ff6b6b', color: 'white', fontWeight: '600', fontSize: '0.95rem',
+  cursor: 'pointer', marginTop: '10px', boxShadow: '0 4px 6px rgba(255,107,107,0.2)',
+  boxSizing: 'border-box'
 };
 const alertWarningStyle = {
-  backgroundColor: '#fff3cd', color: '#856404', padding: '15px', borderRadius: '8px',
-  fontSize: '0.9rem', marginBottom: '20px', border: '1px solid #ffeeba', lineHeight: '1.4'
+  backgroundColor: '#fff3cd', color: '#856404', padding: '12px 14px', borderRadius: '8px',
+  fontSize: '0.85rem', marginBottom: '16px', border: '1px solid #ffeeba', lineHeight: '1.4',
+  boxSizing: 'border-box'
 };
 
 export default ScanTable;
+

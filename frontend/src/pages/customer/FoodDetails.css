@@ -206,7 +206,22 @@
 
 /* Responsive */
 @media (max-width: 900px) {
-  .details-container { flex-direction: column; }
-  .details-image-section { min-height: 280px; }
-  .details-info-section { padding: 28px 20px; }
+  .food-details-page { padding: 20px 12px 60px 12px; }
+  .details-container { flex-direction: column; width: 100%; box-sizing: border-box; }
+  .details-image-section { min-height: 220px; max-height: 280px; width: 100%; }
+  .details-image { width: 100%; object-fit: cover; }
+  .details-info-section { padding: 20px 16px; }
+  .details-name { font-size: 1.6rem; margin-bottom: 8px; }
+  .details-price { font-size: 1.6rem; margin-bottom: 20px; }
+  .details-description { margin-bottom: 20px; font-size: 0.9rem; }
+  .quantity-selector { margin-bottom: 24px; gap: 14px; }
 }
+
+@media (max-width: 360px) {
+  .food-details-page { padding: 12px 8px 40px 8px; }
+  .details-info-section { padding: 14px 10px; }
+  .details-name { font-size: 1.35rem; }
+  .details-price { font-size: 1.4rem; }
+  .btn-large { padding: 12px; font-size: 0.9rem; }
+}
+

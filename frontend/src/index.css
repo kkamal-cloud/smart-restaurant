@@ -1,9 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
-/* ─── Tamil Nadu / Indian Design Tokens ─────────────────────────────────── */
 :root {
-  /* === Core Brand Palette (Indian Temple inspired) === */
   /* Saffron / Temple Orange-Red */
   --ep-primary:            #C94B2C;   /* Deep saffron-red */
   --ep-primary-container:  #A33A1F;   /* Darker shade */
@@ -101,7 +99,11 @@
   box-sizing: border-box;
 }
 
-html { scroll-behavior: smooth; }
+html { 
+  scroll-behavior: smooth; 
+  overflow-x: hidden;
+  max-width: 100%;
+}
 
 body {
   font-family: var(--font-body);
@@ -110,6 +112,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* ─── Indian Ornamental Border Utility ──────────────────────────────────── */

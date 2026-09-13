@@ -56,22 +56,13 @@ function Navbar() {
         </ul>
 
         {/* Action Buttons */}
-        <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="navbar-actions">
           {!isScanPage && pin && (
-            <span 
+            <span
+              className="navbar-pin-badge"
               title="Table PIN for friends to join your single bill"
-              style={{
-                fontSize: '0.85rem',
-                background: 'rgba(214, 158, 46, 0.15)',
-                color: '#b7791f',
-                padding: '5px 12px',
-                borderRadius: '16px',
-                fontWeight: '700',
-                border: '1px solid rgba(214, 158, 46, 0.3)',
-                letterSpacing: '1px'
-              }}
             >
-              {tableNo ? `Table ${tableNo} • ` : ''}🔑 PIN: {pin}
+              PIN: {pin}
             </span>
           )}
 
