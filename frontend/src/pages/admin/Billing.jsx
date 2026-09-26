@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
+import socket from '../../socket';
 import { formatBillNumber } from '../../utils/numberFormatters';
 import './AdminStyles.css';
 
 const Billing = () => {
   const [bills, setBills] = useState([]);
   const [activeSessions, setActiveSessions] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [sessionSearch, setSessionSearch] = useState('');
   const [billSearch, setBillSearch] = useState('');
-  
+
   // Modals state
   const [showBillModal, setShowBillModal] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
@@ -24,12 +26,14 @@ const Billing = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [billsRes, sessionsRes] = await Promise.all([
+      const [billsRes, sessionsRes, paymentsRes] = await Promise.all([
         api.get('/bills'),
-        api.get('/sessions?status=active')
+        api.get('/sessions?status=active'),
+        api.get('/payments')
       ]);
       if (billsRes.data.success) setBills(billsRes.data.data);
       if (sessionsRes.data.success) setActiveSessions(sessionsRes.data.data);
+      if (paymentsRes.data?.success) setPayments(paymentsRes.data.data);
     } catch (err) {
       console.error('Error fetching billing data:', err);
       setError('Failed to load billing data');
@@ -38,11 +42,146 @@ const Billing = () => {
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+
+    socket.on('bill:generated', () => fetchData());
+    socket.on('payment:pending', () => fetchData());
+    socket.on('payment:updated', () => fetchData());
+    socket.on('session:closed', () => fetchData());
+
+    return () => {
+      socket.off('bill:generated');
+      socket.off('payment:pending');
+      socket.off('payment:updated');
+      socket.off('session:closed');
+    };
+  }, []);
 
   const handlePrint = (bill) => {
-    const billNum = typeof bill === 'object' ? formatBillNumber(bill.billNumber, bill._id) : bill;
-    alert(`Printing invoice ${billNum}...`);
+    if (!bill) {
+      window.print();
+      return;
+    }
+
+    const billNum = formatBillNumber(bill.billNumber, bill._id);
+    const tableNum = bill.session?.table?.tableNumber || '1';
+    const customerName =
+      bill.session?.customerIds?.map(c => c.name).filter(Boolean).join(', ') ||
+      bill.customerName ||
+      'Customer'; const dateStr = new Date(bill.createdAt || Date.now()).toLocaleDateString();
+    const timeStr = new Date(bill.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const items = bill.items || [];
+    const subtotal = Number(bill.subtotal || 0).toFixed(2);
+    const taxRate = bill.taxRate || 5;
+    const taxAmount = Number((bill.subtotal * taxRate) / 100).toFixed(2);
+    const discountAmount = bill.discount ? Number(bill.discount).toFixed(2) : 0;
+    const grandTotal = Number(bill.grandTotal || 0).toFixed(2);
+    const paymentStatus = bill.isPaid ? 'PAID' : 'PENDING';
+    const payment = getPaymentForBill(bill._id);
+    const paymentMethod =
+      bill.method ||
+      payment?.method ||
+      '-';
+
+    const paymentMethodDisplay = paymentMethod.toUpperCase();
+
+    const printWindow = window.open('', '_blank', 'width=800,height=700');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+
+    const itemsHtml = items.map(item => `
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: left;">${item.foodName || item.name || 'Item'}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">₹${Number(item.price || 0).toFixed(2)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">₹${Number(item.total || (item.price * item.quantity)).toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Invoice BILL-${billNum}</title>
+        <style>
+          @page { size: auto; margin: 15mm; }
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #2d3436; margin: 0; padding: 20px; background: #fff; }
+          .bill-card { max-width: 600px; margin: 0 auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 30px; }
+          .bill-header { text-align: center; border-bottom: 2px solid #C94B2C; padding-bottom: 16px; margin-bottom: 20px; }
+          .bill-header h1 { margin: 0 0 6px 0; color: #C94B2C; font-size: 26px; }
+          .bill-header p { margin: 2px 0; color: #636e72; font-size: 13px; }
+          .bill-title { font-size: 18px; font-weight: 700; color: #2d3436; margin-top: 10px; letter-spacing: 1px; }
+          .bill-info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+          .bill-info p { margin: 3px 0; }
+          .bill-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+          .bill-table th { background: #f8f9fa; border-bottom: 2px solid #ddd; padding: 10px; text-align: left; color: #57606f; }
+          .bill-totals { width: 280px; margin-left: auto; margin-bottom: 24px; font-size: 14px; }
+          .total-row { display: flex; justify-content: space-between; padding: 5px 0; color: #2d3436; }
+          .grand-total { font-size: 18px; font-weight: bold; border-top: 2px solid #2d3436; padding-top: 8px; margin-top: 4px; color: #C94B2C; }
+          .bill-footer { text-align: center; border-top: 1px solid #eee; padding-top: 16px; color: #636e72; font-size: 13px; }
+          .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+          .badge-paid { background: #2ed573; color: white; }
+          .badge-pending { background: #ffa502; color: white; }
+        </style>
+      </head>
+      <body>
+        <div class="bill-card">
+          <div class="bill-header">
+            <h1>SmartServe</h1>
+            <p>52C South Street, Sivakasi</p>
+            <p>Phone: +91 8300724846</p>
+            <div class="bill-title">INVOICE</div>
+          </div>
+          <div class="bill-info">
+            <div>
+              <p><strong>Customer:</strong> ${customerName}</p>
+              <p><strong>Table No:</strong> Table ${tableNum}</p>
+<p><strong>Payment Method:</strong> ${paymentMethodDisplay}</p>
+            </div>
+            <div style="text-align: right;">
+              <p><strong>Bill No:</strong> BILL-${billNum}</p>
+              <p><strong>Date:</strong> ${dateStr}</p>
+              <p><strong>Time:</strong> ${timeStr}</p>
+              <p><strong>Status:</strong> <span class="badge ${bill.isPaid ? 'badge-paid' : 'badge-pending'}">${paymentStatus}</span></p>
+            </div>
+          </div>
+          <table class="bill-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Item</th>
+                <th style="text-align: center;">Qty</th>
+                <th style="text-align: right;">Price</th>
+                <th style="text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+          <div class="bill-totals">
+            <div class="total-row"><span>Subtotal:</span><span>₹${subtotal}</span></div>
+            <div class="total-row"><span>Tax (${taxRate}% GST):</span><span>₹${taxAmount}</span></div>
+            ${discountAmount > 0 ? `<div class="total-row"><span>Discount:</span><span>-₹${discountAmount}</span></div>` : ''}
+            <div class="total-row grand-total"><span>Grand Total:</span><span>₹${grandTotal}</span></div>
+          </div>
+          <div class="bill-footer">
+            <p>Thank you for dining with us!</p>
+            <p>Please visit again.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
   };
 
   const openGenerateBillModal = (session) => {
@@ -71,9 +210,9 @@ const Billing = () => {
     }
   };
 
-  const openPaymentModal = (bill) => {
+  const openPaymentModal = (bill, defaultMethod = 'cash') => {
     setSelectedBill(bill);
-    setPaymentParams({ method: 'cash', reference: '' });
+    setPaymentParams({ method: defaultMethod, reference: '' });
     setShowPaymentModal(true);
   };
 
@@ -87,7 +226,7 @@ const Billing = () => {
         reference: paymentParams.reference
       });
       if (response.data.success) {
-        alert('Payment processed successfully! Session closed and table released.');
+        alert('Payment confirmed successfully! Customer session closed.');
         setShowPaymentModal(false);
         fetchData();
       }
@@ -142,7 +281,7 @@ const Billing = () => {
               billId: selectedBill._id,
             });
             if (verifyRes.data.success) {
-              alert('Payment verified! Bill paid. Session closed and table released.');
+              alert('Payment verified! Bill paid. Session closed.');
               setShowPaymentModal(false);
               fetchData();
             } else {
@@ -179,6 +318,10 @@ const Billing = () => {
     } else {
       await handleManualPayment();
     }
+  };
+
+  const getPaymentForBill = (billId) => {
+    return payments.find(p => p.bill && (p.bill._id === billId || p.bill === billId));
   };
 
   const filteredActiveSessions = activeSessions.filter(session => {
@@ -224,7 +367,7 @@ const Billing = () => {
           <div style={{ flex: '1 1 300px' }}>
             <h2 style={{ marginTop: 0, marginBottom: '0.5rem' }}>Active Dining Sessions</h2>
             <p style={{ color: '#636e72', fontSize: '0.9rem', marginBottom: 0 }}>
-              These tables are currently occupied. Generate a bill once they finish ordering.
+              These tables are currently occupied. Bills generate automatically when customers click Finish Dining.
             </p>
           </div>
           <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: '400px' }}>
@@ -271,12 +414,12 @@ const Billing = () => {
         </div>
       </div>
 
-      {/* SECTION 2: Generated Bills */}
+      {/* SECTION 2: Generated Bills & Pending Payments */}
       <div className="admin-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px', marginBottom: '1.5rem' }}>
           <div style={{ flex: '1 1 300px' }}>
             <h2 style={{ marginTop: 0, marginBottom: '0.5rem' }}>Billing &amp; Invoices</h2>
-            <p style={{ color: '#636e72', fontSize: '0.9rem', marginBottom: 0 }}>All generated bills and payment records.</p>
+            <p style={{ color: '#636e72', fontSize: '0.9rem', marginBottom: 0 }}>All generated bills and payment statuses.</p>
           </div>
           <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: '400px' }}>
             <span className="material-symbols-outlined" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#636e72', fontSize: '1.2rem', pointerEvents: 'none' }}>search</span>
@@ -302,28 +445,43 @@ const Billing = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredBills.map(bill => (
-                <tr key={bill._id}>
-                  <td>{formatBillNumber(bill.billNumber, bill._id)}</td>
-                  <td>Table {bill.session?.table?.tableNumber || '1'}</td>
-                  <td><strong>Rs.{(bill.grandTotal || 0).toFixed(0)}</strong></td>
-                  <td>
-                    <span className={`badge ${bill.isPaid ? 'badge-success' : 'badge-warning'}`}>
-                      {bill.isPaid ? 'Paid' : 'Unpaid'}
-                    </span>
-                  </td>
-                  <td>{bill.method ? bill.method.toUpperCase() : '-'}</td>
-                  <td>
-                    {!bill.isPaid ? (
-                      <button className="btn-add" onClick={() => openPaymentModal(bill)} style={{ backgroundColor: '#2ed573', marginRight: '8px' }}>
-                        Receive Payment
-                      </button>
-                    ) : (
-                      <button className="btn-edit" onClick={() => handlePrint(bill)}>Print</button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {filteredBills.map(bill => {
+                const pm = getPaymentForBill(bill._id);
+                const paymentStatus = bill.isPaid
+                  ? 'Paid'
+                  : pm && pm.status === 'pending'
+                    ? `Payment Pending (${pm.method.toUpperCase()})`
+                    : 'Unpaid / Pending';
+
+                const methodDisplay = bill.method
+                  ? bill.method.toUpperCase()
+                  : pm
+                    ? pm.method.toUpperCase()
+                    : '-';
+
+                return (
+                  <tr key={bill._id}>
+                    <td>BILL-{formatBillNumber(bill.billNumber, bill._id)}</td>
+                    <td>Table {bill.session?.table?.tableNumber || '1'}</td>
+                    <td><strong>₹{(bill.grandTotal || 0).toFixed(0)}</strong></td>
+                    <td>
+                      <span className={`badge ${bill.isPaid ? 'badge-success' : pm && pm.status === 'pending' ? 'badge-warning' : 'badge-danger'}`}>
+                        {paymentStatus}
+                      </span>
+                    </td>
+                    <td>{methodDisplay}</td>
+                    <td>
+                      {!bill.isPaid ? (
+                        <button className="btn-add" onClick={() => openPaymentModal(bill, pm?.method || 'cash')} style={{ backgroundColor: '#2ed573', marginRight: '8px' }}>
+                          Confirm Payment
+                        </button>
+                      ) : (
+                        <button className="btn-edit" onClick={() => handlePrint(bill)}>Print Invoice</button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
@@ -341,12 +499,12 @@ const Billing = () => {
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontWeight: 'bold' }}>Tax Rate (%)</label>
                 <input type="number" min="0" required value={billParams.taxRate}
-                  onChange={(e) => setBillParams({...billParams, taxRate: e.target.value})} style={inputStyle} />
+                  onChange={(e) => setBillParams({ ...billParams, taxRate: e.target.value })} style={inputStyle} />
               </div>
               <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{ display: 'block', fontWeight: 'bold' }}>Discount (Rs.)</label>
                 <input type="number" min="0" required value={billParams.discount}
-                  onChange={(e) => setBillParams({...billParams, discount: e.target.value})} style={inputStyle} />
+                  onChange={(e) => setBillParams({ ...billParams, discount: e.target.value })} style={inputStyle} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <button type="button" className="btn-delete" onClick={() => setShowBillModal(false)}>Cancel</button>
@@ -361,14 +519,14 @@ const Billing = () => {
       {showPaymentModal && selectedBill && (
         <div className="modal-overlay" style={modalOverlayStyle}>
           <div className="modal-content" style={modalContentStyle}>
-            <h2>Receive Payment</h2>
+            <h2>Confirm Counter Payment</h2>
             <p style={{ fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-              Amount Due: <strong>Rs.{(selectedBill.grandTotal || 0).toFixed(0)}</strong>
+              Amount Due: <strong>₹{(selectedBill.grandTotal || 0).toFixed(0)}</strong>
             </p>
             <form onSubmit={handlePaymentSubmit}>
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontWeight: 'bold' }}>Payment Method</label>
-                <select value={paymentParams.method} onChange={(e) => setPaymentParams({...paymentParams, method: e.target.value})} style={inputStyle}>
+                <select value={paymentParams.method} onChange={(e) => setPaymentParams({ ...paymentParams, method: e.target.value })} style={inputStyle}>
                   <option value="cash">Cash</option>
                   <option value="card">Card</option>
                   <option value="upi">UPI / Online (Razorpay)</option>
@@ -386,8 +544,8 @@ const Billing = () => {
                 <div style={{ marginBottom: '1.5rem' }}>
                   <label style={{ display: 'block', fontWeight: 'bold' }}>Reference / Notes (Optional)</label>
                   <input type="text" value={paymentParams.reference}
-                    onChange={(e) => setPaymentParams({...paymentParams, reference: e.target.value})}
-                    placeholder="e.g. Transaction ID, cash detail" style={inputStyle} />
+                    onChange={(e) => setPaymentParams({ ...paymentParams, reference: e.target.value })}
+                    placeholder="e.g. Counter Cash, Card Receipt #" style={inputStyle} />
                 </div>
               )}
 
@@ -398,7 +556,7 @@ const Billing = () => {
                 <button type="submit" className="btn-add"
                   style={{ backgroundColor: paymentParams.method === 'upi' ? '#667eea' : '#2ed573', opacity: razorpayLoading ? 0.7 : 1, cursor: razorpayLoading ? 'not-allowed' : 'pointer' }}
                   disabled={razorpayLoading}>
-                  {razorpayLoading ? 'Opening Razorpay...' : paymentParams.method === 'upi' ? 'Pay via Razorpay' : 'Complete Payment'}
+                  {razorpayLoading ? 'Opening Razorpay...' : paymentParams.method === 'upi' ? 'Pay via Razorpay' : 'Confirm & Close Session'}
                 </button>
               </div>
             </form>

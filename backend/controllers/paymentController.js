@@ -8,6 +8,7 @@ const { processPaymentSchema, createRazorpayOrderSchema, verifyRazorpaySchema } 
 const { getIo } = require('../sockets/socketSetup');
 const mongoose = require('mongoose');
 const razorpay = require('../utils/razorpay');
+const { syncTableAvailability } = require('../utils/tableHelper');
 
 
 exports.processPayment = async (req, res, next) => {
@@ -38,13 +39,26 @@ exports.processPayment = async (req, res, next) => {
       throw new Error(`Amount must equal grandTotal (${bill.grandTotal})`);
     }
 
-    const payment = await Payment.create([{
-      bill: billId,
-      amount,
-      method,
-      status: 'success',
-      reference
-    }], { session: session || undefined });
+    // Check if an existing pending payment exists for this bill
+    let payment;
+    const existingPayment = await Payment.findOne({ bill: billId, status: 'pending' }).session(session || undefined);
+    if (existingPayment) {
+      existingPayment.method = method;
+      existingPayment.status = 'success';
+      existingPayment.reference = reference || existingPayment.reference;
+      existingPayment.amount = amount;
+      await existingPayment.save({ session: session || undefined });
+      payment = existingPayment;
+    } else {
+      const created = await Payment.create([{
+        bill: billId,
+        amount,
+        method,
+        status: 'success',
+        reference
+      }], { session: session || undefined });
+      payment = created[0];
+    }
 
     bill.isPaid = true;
     await bill.save({ session: session || undefined });
@@ -56,12 +70,7 @@ exports.processPayment = async (req, res, next) => {
     customerSession.status = 'closed';
     await customerSession.save({ session: session || undefined });
 
-    let tableQuery = RestaurantTable.findById(customerSession.table);
-    if (session) tableQuery = tableQuery.session(session);
-    const table = await tableQuery;
-    
-    table.isAvailable = true;
-    await table.save({ session: session || undefined });
+    await syncTableAvailability(customerSession.table, session);
 
     if (session) {
       await session.commitTransaction();
@@ -70,8 +79,9 @@ exports.processPayment = async (req, res, next) => {
 
     const io = getIo();
     io.to(`session:${customerSession._id}`).emit('session:closed', { message: 'Payment successful, session closed.' });
+    io.emit('payment:updated', { billId, status: 'success' });
 
-    sendSuccess(res, payment[0], 201);
+    sendSuccess(res, payment, 201);
   } catch (err) {
     if (session) {
       await session.abortTransaction();
@@ -84,6 +94,43 @@ exports.processPayment = async (req, res, next) => {
   }
 };
 
+exports.selectCounterPayment = async (req, res, next) => {
+  try {
+    const { billId, method } = req.body;
+    if (!billId || !['cash', 'card'].includes(method)) {
+      return sendError(res, 'VALIDATION_ERROR', 'Valid billId and method (cash/card) are required', 400);
+    }
+
+    const bill = await Bill.findById(billId);
+    if (!bill) return sendError(res, 'NOT_FOUND', 'Bill not found', 404);
+    if (bill.isPaid) return sendError(res, 'BAD_REQUEST', 'Bill is already paid', 400);
+
+    let payment = await Payment.findOne({ bill: billId });
+    if (payment) {
+      payment.method = method;
+      payment.status = 'pending';
+      await payment.save();
+    } else {
+      payment = await Payment.create({
+        bill: billId,
+        amount: bill.grandTotal,
+        method,
+        status: 'pending'
+      });
+    }
+
+    const io = getIo();
+    io.emit('payment:pending', { billId, method, amount: bill.grandTotal });
+
+    sendSuccess(res, {
+      payment,
+      message: 'Please complete your payment at the counter.'
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getPayments = async (req, res, next) => {
   try {
     const { method, status } = req.query;
@@ -91,7 +138,15 @@ exports.getPayments = async (req, res, next) => {
     if (method) filter.method = method;
     if (status) filter.status = status;
 
-    const payments = await Payment.find(filter).populate('bill').sort('-createdAt');
+    const payments = await Payment.find(filter)
+      .populate({
+        path: 'bill',
+        populate: {
+          path: 'session',
+          populate: { path: 'table', select: 'tableNumber' }
+        }
+      })
+      .sort('-createdAt');
     sendSuccess(res, payments);
   } catch (err) {
     next(err);
@@ -163,14 +218,26 @@ exports.verifyRazorpayPayment = async (req, res, next) => {
     if (!bill) throw new Error('Bill not found');
     if (bill.isPaid) throw new Error('Bill is already paid');
 
-    // Record the payment
-    const payment = await Payment.create([{
-      bill: billId,
-      amount: bill.grandTotal,
-      method: 'upi',
-      status: 'success',
-      reference: razorpay_payment_id,
-    }], { session: session || undefined });
+    // Record the payment (update existing or create new)
+    let payment;
+    const existingPayment = await Payment.findOne({ bill: billId }).session(session || undefined);
+    if (existingPayment) {
+      existingPayment.method = 'upi';
+      existingPayment.status = 'success';
+      existingPayment.reference = razorpay_payment_id;
+      existingPayment.amount = bill.grandTotal;
+      await existingPayment.save({ session: session || undefined });
+      payment = existingPayment;
+    } else {
+      const created = await Payment.create([{
+        bill: billId,
+        amount: bill.grandTotal,
+        method: 'upi',
+        status: 'success',
+        reference: razorpay_payment_id,
+      }], { session: session || undefined });
+      payment = created[0];
+    }
 
     bill.isPaid = true;
     await bill.save({ session: session || undefined });
@@ -182,12 +249,7 @@ exports.verifyRazorpayPayment = async (req, res, next) => {
     customerSession.status = 'closed';
     await customerSession.save({ session: session || undefined });
 
-    let tableQuery = RestaurantTable.findById(customerSession.table);
-    if (session) tableQuery = tableQuery.session(session);
-    const table = await tableQuery;
-
-    table.isAvailable = true;
-    await table.save({ session: session || undefined });
+    await syncTableAvailability(customerSession.table, session);
 
     if (session) {
       await session.commitTransaction();
@@ -196,8 +258,9 @@ exports.verifyRazorpayPayment = async (req, res, next) => {
 
     const io = getIo();
     io.to(`session:${customerSession._id}`).emit('session:closed', { message: 'Payment successful, session closed.' });
+    io.emit('payment:updated', { billId, status: 'success' });
 
-    sendSuccess(res, payment[0], 201);
+    sendSuccess(res, payment, 201);
   } catch (err) {
     if (session) { await session.abortTransaction(); session.endSession(); }
     if (err.message === 'Bill not found' || err.message === 'Bill is already paid') {
@@ -206,4 +269,5 @@ exports.verifyRazorpayPayment = async (req, res, next) => {
     next(err);
   }
 };
+
 

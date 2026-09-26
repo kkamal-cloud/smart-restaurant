@@ -6,6 +6,7 @@ const RestaurantTable = require('../models/RestaurantTable');
 const { sendSuccess, sendError } = require('../utils/responseFormatter');
 const { createSessionSchema } = require('../validations/sessionValidation');
 const { getIo } = require('../sockets/socketSetup');
+const { syncTableAvailability } = require('../utils/tableHelper');
 
 exports.createOrJoinSession = async (req, res, next) => {
   try {
@@ -152,14 +153,7 @@ exports.closeSession = async (req, res, next) => {
     customerSession.status = 'closed';
     await customerSession.save({ session: sessionDb || undefined });
 
-    let tableQuery = RestaurantTable.findById(customerSession.table);
-    if (sessionDb) tableQuery = tableQuery.session(sessionDb);
-    const table = await tableQuery;
-    
-    if (table) {
-      table.isAvailable = true;
-      await table.save({ session: sessionDb || undefined });
-    }
+    await syncTableAvailability(customerSession.table, sessionDb);
 
     if (sessionDb) {
       await sessionDb.commitTransaction();

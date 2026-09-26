@@ -2,16 +2,32 @@ const mongoose = require('mongoose');
 const dns = require('dns');
 const migrateSequentialNumbers = require('../scripts/migrateSequentialNumbers');
 
-// Set public DNS servers to resolve MongoDB Atlas SRV records if local ISP DNS fails
-dns.setServers(['8.8.8.8', '1.1.1.1']);
-
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    let conn;
+    try {
+      // Try connecting with standard configuration
+      conn = await mongoose.connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 10000,
+      });
+    } catch (firstErr) {
+      console.warn(`Standard MongoDB connection failed (${firstErr.message}). Retrying with custom DNS servers...`);
+      try {
+        dns.setServers(['8.8.8.8', '1.1.1.1']);
+      } catch (e) {}
+      conn = await mongoose.connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 10000,
+      });
+    }
+
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     
     // Auto-migrate sequential numbers for existing records
-    await migrateSequentialNumbers();
+    try {
+      await migrateSequentialNumbers();
+    } catch (migErr) {
+      console.warn(`Migration warning: ${migErr.message}`);
+    }
 
     // Detect Replica Set support
     try {
@@ -24,10 +40,8 @@ const connectDB = async () => {
       console.log(`MongoDB Replica Set check failed, assuming standalone: ${e.message}`);
     }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    console.error(`MongoDB Connection Failed: ${error.message}`);
   }
 };
-
 
 module.exports = connectDB;

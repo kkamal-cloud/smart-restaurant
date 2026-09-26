@@ -172,18 +172,6 @@ const Checkout = () => {
               <strong>₹{completedOrder.total.toFixed(0)}</strong>
             </div>
           </div>
-
-          {/* QR Code Verification */}
-          <div className="qr-verification-box">
-            <QRCodeSVG 
-              value={`${import.meta.env.VITE_APP_URL || window.location.origin}/bill/${completedOrder.id}`}
-              size={140}
-              level="H"
-            />
-            <p className="qr-hint">Scan to view your bill</p>
-            <span className="qr-subhint">Show this to staff or scan later</span>
-          </div>
-
           {/* Actions */}
           <div className="placed-actions">
             <button className="whatsapp-share-btn" onClick={shareOnWhatsApp}>

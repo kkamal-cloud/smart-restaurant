@@ -13,7 +13,7 @@ function Footer() {
         <div className="footer-section">
           <h4>Quick Links</h4>
           <ul>
-            <li><a href="/">Home</a></li>
+            <li><a href="/home">Home</a></li>
             <li><a href="/menu">Menu</a></li>
             <li><a href="/orders">Track Order</a></li>
           </ul>

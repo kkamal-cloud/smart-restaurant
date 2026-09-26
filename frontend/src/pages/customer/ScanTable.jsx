@@ -26,19 +26,32 @@ const ScanTable = () => {
         const fetchedTable = response.data.data;
         setTable(fetchedTable);
 
-        // Clear previous session if scanning a DIFFERENT table
+        // Clear stale session data if scanning a DIFFERENT table or if stored session is closed
         const currentSessionId = localStorage.getItem('sessionId');
         if (currentSessionId && fetchedTable) {
           api.get(`/sessions/${currentSessionId}`)
             .then(res => {
-              if (res.data?.success && res.data.data?.table?._id !== fetchedTable.id) {
-                localStorage.removeItem('sessionId');
-                localStorage.removeItem('joinToken');
-                localStorage.removeItem('joinPin');
-                localStorage.removeItem('customer');
+              if (res.data?.success && res.data.data) {
+                const existingSession = res.data.data;
+                const sessionTableId = existingSession.table?._id || existingSession.table;
+
+                if (sessionTableId !== fetchedTable.id || existingSession.status !== 'active') {
+                  // Session belongs to a DIFFERENT table or is closed -> clear stale session
+                  localStorage.removeItem('sessionId');
+                  localStorage.removeItem('joinToken');
+                  localStorage.removeItem('joinPin');
+                  localStorage.removeItem('customer');
+                  localStorage.removeItem('smartserve_cart');
+                }
               }
             })
-            .catch(() => { });
+            .catch(() => {
+              localStorage.removeItem('sessionId');
+              localStorage.removeItem('joinToken');
+              localStorage.removeItem('joinPin');
+              localStorage.removeItem('customer');
+              localStorage.removeItem('smartserve_cart');
+            });
         }
       } else {
         setError('Invalid QR code');
@@ -78,6 +91,8 @@ const ScanTable = () => {
 
       if (response.data.success) {
         const { sessionId, joinToken: returnedJoinToken, joinPin: returnedJoinPin, customer } = response.data.data;
+        // Clear any previous cart to ensure isolation for the new session
+        localStorage.removeItem('smartserve_cart');
         // Save session details to localStorage
         localStorage.setItem('sessionId', sessionId);
         localStorage.setItem('joinToken', returnedJoinToken);

@@ -59,25 +59,6 @@ const SessionEnded = () => {
         }}>
           We hope you enjoyed your meal! You can safely close this browser window.
         </p>
-
-        <button
-          onClick={() => navigate('/home')}
-          style={{
-            background: 'linear-gradient(135deg, #C94B2C 0%, #A33A1F 100%)',
-            color: '#ffffff',
-            border: 'none',
-            padding: '12px 28px',
-            borderRadius: '9999px',
-            fontSize: '0.9rem',
-            fontWeight: '700',
-            fontFamily: "'Poppins', sans-serif",
-            cursor: 'pointer',
-            boxShadow: '0 8px 20px rgba(201, 75, 44, 0.25)',
-            transition: 'transform 0.2s, box-shadow 0.2s'
-          }}
-        >
-          Return to Restaurant Home
-        </button>
       </div>
     </div>
   );

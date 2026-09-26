@@ -64,10 +64,19 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     };
   }, [token, role]);
 
-  const loginRedirectPath = role === 'kitchen' ? '/kitchen/login' : '/admin/login';
+  // 1. If there is no token/user or role mismatch upfront, immediately redirect to '/'
+  if (!token || !user || user.role !== role) {
+    return <Navigate to="/" replace />;
+  }
 
-  if (!token || !user || user.role !== role || (!isValidating && !isAuthenticated)) {
-    return <Navigate to={loginRedirectPath} replace />;
+  // 2. While backend token validation (/api/auth/me) is in progress, do NOT render children yet!
+  if (isValidating) {
+    return null;
+  }
+
+  // 3. After validation finishes, if not authenticated, redirect to '/'
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
   }
 
   return children;

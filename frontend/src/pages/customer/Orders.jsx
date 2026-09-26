@@ -79,6 +79,29 @@ const Orders = () => {
     };
   }, []);
 
+  const [finishing, setFinishing] = useState(false);
+  const [finishError, setFinishError] = useState('');
+
+  const handleFinishDining = async () => {
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) return;
+    setFinishing(true);
+    setFinishError('');
+    try {
+      const response = await api.post('/bills/finish-dining', { sessionId });
+      if (response.data.success) {
+        const bill = response.data.data;
+        navigate(`/bill/${bill._id}`);
+      }
+    } catch (err) {
+      console.error('Error finishing dining:', err);
+      const msg = err.response?.data?.error?.message || err.response?.data?.message || 'Failed to finish dining. Please try again.';
+      setFinishError(msg);
+    } finally {
+      setFinishing(false);
+    }
+  };
+
   // Helper function to assign classes based on status for styling
   const getStatusClass = (status) => {
     switch((status || '').toLowerCase()) {
@@ -113,6 +136,57 @@ const Orders = () => {
         <h1>Your Orders</h1>
         <p>Track your current orders and view past history</p>
       </div>
+
+      {ordersList.length > 0 && (
+        <div style={{
+          background: 'linear-gradient(135deg, #2ed573 0%, #26af5f 100%)',
+          borderRadius: '12px',
+          padding: '20px',
+          color: 'white',
+          marginBottom: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          boxShadow: '0 4px 15px rgba(46, 213, 115, 0.3)'
+        }}>
+          <h3 style={{ margin: '0 0 6px 0', fontSize: '1.25rem' }}>Ready to complete your meal?</h3>
+          <p style={{ margin: '0 0 14px 0', fontSize: '0.9rem', opacity: 0.9 }}>
+            Click below when you have finished dining to view your final bill and select your payment method.
+          </p>
+          {finishError && (
+            <div style={{
+              backgroundColor: '#ff4757',
+              color: 'white',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              marginBottom: '14px',
+              fontSize: '0.9rem',
+              fontWeight: '600'
+            }}>
+              ⚠️ {finishError}
+            </div>
+          )}
+          <button
+            onClick={handleFinishDining}
+            disabled={finishing}
+            style={{
+              backgroundColor: 'white',
+              color: '#26af5f',
+              border: 'none',
+              padding: '12px 28px',
+              borderRadius: '25px',
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              cursor: finishing ? 'not-allowed' : 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              transition: 'transform 0.2s'
+            }}
+          >
+            {finishing ? 'Generating Bill...' : '✨ Finish Dining & Pay Bill'}
+          </button>
+        </div>
+      )}
 
       {ordersList.length === 0 ? (
         <div className="empty-orders">
@@ -163,3 +237,4 @@ const Orders = () => {
 };
 
 export default Orders;
+

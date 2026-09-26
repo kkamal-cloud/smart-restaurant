@@ -230,24 +230,6 @@
   border-top: 1px dashed var(--ep-outline-variant);
   margin: 10px 0;
 }
-
-/* QR Section */
-.qr-verification-box {
-  background: var(--ep-surface-container-lowest);
-  border: 1px solid var(--ep-outline-variant);
-  padding: 16px;
-  border-radius: var(--r-xl);
-  display: inline-block;
-  margin-bottom: 24px;
-}
-.qr-hint {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--ep-on-surface);
-  margin: 10px 0 2px 0;
-}
-.qr-subhint { font-size: 0.75rem; color: var(--ep-outline); }
-
 /* Actions */
 .placed-actions {
   display: flex;

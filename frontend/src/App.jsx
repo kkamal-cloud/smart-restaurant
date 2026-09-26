@@ -1,8 +1,11 @@
 import { useEffect } from 'react'
-import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
+import { Routes,Route,useLocation,useNavigate,Navigate} from 'react-router-dom'
+
 import api from './api'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+
+// Customer Components
 import Home from './pages/customer/Home'
 import Menu from './pages/customer/Menu'
 import FoodDetails from './pages/customer/FoodDetails'
@@ -13,6 +16,7 @@ import OrderDetails from './pages/customer/OrderDetails'
 import Bill from './pages/customer/Bill'
 import ScanTable from './pages/customer/ScanTable'
 import SessionEnded from './pages/customer/SessionEnded'
+import PaymentSuccess from './pages/customer/PaymentSuccess'
 
 // Admin Components
 import AdminLogin from './pages/admin/Login'
@@ -28,118 +32,332 @@ import Reports from './pages/admin/Reports'
 
 // Kitchen Components
 import KitchenDashboard from './pages/kitchen/KitchenDashboard'
+
+// Context
 import { CartProvider } from './context/CartContext'
+
+// Authentication
 import ProtectedRoute from './components/ProtectedRoute'
 
+
 function App() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = useLocation()
+  const navigate = useNavigate()
 
+  /*
+   * ============================================================
+   * CUSTOMER SESSION CHECK
+   * ============================================================
+   *
+   * Customer pages require:
+   *  - sessionId
+   *  - joinToken
+   *
+   * Admin / Kitchen pages are NOT affected by this check.
+   */
   useEffect(() => {
-    const isCustomerRoute = 
-      !location.pathname.startsWith('/admin') && 
-      !location.pathname.startsWith('/kitchen') && 
+    const isCustomerRoute =
+      !location.pathname.startsWith('/admin') &&
+      !location.pathname.startsWith('/kitchen') &&
       location.pathname !== '/' &&
-      location.pathname !== '/session-ended';
-      
-    const sessionId = localStorage.getItem('sessionId');
-    const joinToken = localStorage.getItem('joinToken');
+      location.pathname !== '/login' &&
+      location.pathname !== '/session-ended' &&
+      location.pathname !== '/payment-success' &&
+      !location.pathname.startsWith('/qr/') &&
+      !location.pathname.startsWith('/scan/')
 
-    if (isCustomerRoute && sessionId && joinToken) {
-      api.get(`/sessions/${sessionId}`)
-        .then(response => {
-          const session = response.data?.data;
-          if (session && session.status !== 'active') {
-            localStorage.removeItem('sessionId');
-            localStorage.removeItem('joinToken');
-            localStorage.removeItem('customer');
-            localStorage.removeItem('smartserve_cart');
-            navigate('/session-ended');
-          }
-        })
-        .catch(err => {
-          if (err.response?.status === 401 || err.response?.status === 404) {
-            localStorage.removeItem('sessionId');
-            localStorage.removeItem('joinToken');
-            localStorage.removeItem('customer');
-            localStorage.removeItem('smartserve_cart');
-            navigate('/session-ended');
-          }
-        });
+    const sessionId = localStorage.getItem('sessionId')
+    const joinToken = localStorage.getItem('joinToken')
+
+    if (!isCustomerRoute) {
+      return
     }
-  }, [location.pathname, navigate]);
 
-  // Check if current path is an admin, kitchen or staff login route
-  const isStaffRoute = 
-    location.pathname.startsWith('/admin') || 
-    location.pathname.startsWith('/kitchen') || 
-    location.pathname === '/' || 
-    location.pathname === '/login';
+    // No active customer session
+    if (!sessionId || !joinToken) {
+      localStorage.removeItem('sessionId')
+      localStorage.removeItem('joinToken')
+      localStorage.removeItem('customer')
+      localStorage.removeItem('smartserve_cart')
+
+      navigate('/session-ended')
+      return
+    }
+
+    // Verify customer session with backend
+    api
+      .get(`/sessions/${sessionId}`)
+      .then((response) => {
+        const session = response.data?.data
+
+        if (!session || session.status !== 'active') {
+          localStorage.removeItem('sessionId')
+          localStorage.removeItem('joinToken')
+          localStorage.removeItem('customer')
+          localStorage.removeItem('smartserve_cart')
+
+          navigate('/session-ended')
+        }
+      })
+      .catch((err) => {
+        if (
+          err.response?.status === 401 ||
+          err.response?.status === 404 ||
+          err.response?.status === 400
+        ) {
+          localStorage.removeItem('sessionId')
+          localStorage.removeItem('joinToken')
+          localStorage.removeItem('customer')
+          localStorage.removeItem('smartserve_cart')
+
+          navigate('/session-ended')
+        }
+      })
+  }, [location.pathname, navigate])
+
+
+  /*
+   * ============================================================
+   * STAFF ROUTE CHECK
+   * ============================================================
+   *
+   * Navbar and Footer should NOT appear on:
+   *
+   *  /admin/*
+   *  /kitchen/*
+   *  /
+   *  /login
+   */
+  const isStaffRoute =
+    location.pathname.startsWith('/admin') ||
+    location.pathname.startsWith('/kitchen') ||
+    location.pathname === '/' ||
+    location.pathname === '/login'
+
 
   return (
     <CartProvider>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        {/* Hide customer Navbar if on a staff route */}
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh'
+        }}
+      >
+
+        {/* Customer Navbar */}
         {!isStaffRoute && <Navbar />}
-      
-      <main style={{ flex: 1 }}>
-        <Routes>
-          {/* Staff Login on Root URL */}
-          <Route path="/" element={<AdminLogin />} />
 
-          {/* Customer Routes */}
-          <Route path="/home" element={<Home />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/menu/:id" element={<FoodDetails />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/orders/:id" element={<OrderDetails />} />
-          <Route path="/bill/:id" element={<Bill />} />
-          <Route path="/qr/:token" element={<ScanTable />} />
-          <Route path="/scan/:token" element={<ScanTable />} />
-          <Route path="/session-ended" element={<SessionEnded />} />
-          
-          {/* Staff Login Routes */}
-          <Route path="/login" element={<AdminLogin />} />
-          <Route path="/kitchen/login" element={<AdminLogin />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          
-          {/* Admin Protected Layout Routes – only role='admin' allowed */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="menu" element={<MenuManagement />} />
-            <Route path="categories" element={<CategoryManagement />} />
-            <Route path="tables" element={<TableManagement />} />
-            <Route path="orders" element={<OrderManagement />} />
-            <Route path="billing" element={<Billing />} />
-            <Route path="stock" element={<StockManagement />} />
-            <Route path="reports" element={<Reports />} />
-          </Route>
 
-          {/* Kitchen Route – strictly role='kitchen' */}
-          <Route
-            path="/kitchen"
-            element={
-              <ProtectedRoute requiredRole="kitchen">
-                <KitchenDashboard />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </main>
+        <main style={{ flex: 1 }}>
 
-        {/* Hide customer Footer if on a staff route */}
+          <Routes>
+
+            {/* ==================================================
+                ROOT
+                ================================================== */}
+
+            {/* Existing root login */}
+            <Route path="/" element={<AdminLogin />} />
+
+            {/* Legacy login */}
+            <Route path="/login" element={<Navigate to="/" replace />} />
+
+
+            {/* ==================================================
+                CUSTOMER ROUTES
+                ================================================== */}
+
+            <Route
+              path="/home"
+              element={<Home />}
+            />
+
+            <Route
+              path="/menu"
+              element={<Menu />}
+            />
+
+            <Route
+              path="/menu/:id"
+              element={<FoodDetails />}
+            />
+
+            <Route
+              path="/cart"
+              element={<Cart />}
+            />
+
+            <Route
+              path="/checkout"
+              element={<Checkout />}
+            />
+
+            <Route
+              path="/orders"
+              element={<Orders />}
+            />
+
+            <Route
+              path="/orders/:id"
+              element={<OrderDetails />}
+            />
+
+            <Route
+              path="/bill/:id"
+              element={<Bill />}
+            />
+
+            {/* QR Scan */}
+            <Route
+              path="/qr/:token"
+              element={<ScanTable />}
+            />
+
+            {/* Alternative QR Scan */}
+            <Route
+              path="/scan/:token"
+              element={<ScanTable />}
+            />
+
+            {/* Session ended */}
+            <Route
+              path="/session-ended"
+              element={<SessionEnded />}
+            />
+
+            {/* Payment success */}
+            <Route
+              path="/payment-success"
+              element={<PaymentSuccess />}
+            />
+
+
+            {/* ==================================================
+                ADMIN LOGIN
+                ================================================== */}
+
+            {/* 
+              /admin
+              /admin/login
+
+              Both open Admin Login page.
+            */}
+
+            <Route
+              path="/admin"
+              element={<AdminLogin />}
+            />
+
+            <Route
+              path="/admin/login"
+              element={<AdminLogin />}
+            />
+
+
+            {/* ==================================================
+                ADMIN PROTECTED ROUTES
+                ================================================== */}
+
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+
+              {/* Dashboard */}
+              <Route
+                path="dashboard"
+                element={<Dashboard />}
+              />
+
+              {/* Menu Management */}
+              <Route
+                path="menu"
+                element={<MenuManagement />}
+              />
+
+              {/* Category Management */}
+              <Route
+                path="categories"
+                element={<CategoryManagement />}
+              />
+
+              {/* Table Management */}
+              <Route
+                path="tables"
+                element={<TableManagement />}
+              />
+
+              {/* Order Management */}
+              <Route
+                path="orders"
+                element={<OrderManagement />}
+              />
+
+              {/* Billing */}
+              <Route
+                path="billing"
+                element={<Billing />}
+              />
+
+              {/* Stock Management */}
+              <Route
+                path="stock"
+                element={<StockManagement />}
+              />
+
+              {/* Reports */}
+              <Route
+                path="reports"
+                element={<Reports />}
+              />
+
+            </Route>
+
+            <Route
+              path="/kitchen/login"
+              element={<AdminLogin />}
+            />
+
+
+            {/* ==================================================
+                KITCHEN DASHBOARD
+                ================================================== */}
+
+            <Route
+              path="/kitchen"
+              element={
+                <ProtectedRoute requiredRole="kitchen">
+                  <KitchenDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+
+            {/* ==================================================
+                UNKNOWN ROUTE
+                ================================================== */}
+
+            <Route
+              path="*"
+              element={<Navigate to="/" replace />}
+            />
+
+          </Routes>
+
+        </main>
+
+
+        {/* Customer Footer */}
         {!isStaffRoute && <Footer />}
+
       </div>
+
     </CartProvider>
   )
 }

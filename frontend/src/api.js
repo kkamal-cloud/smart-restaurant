@@ -9,12 +9,24 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     let token = null;
-    if (config.url?.includes('/kitchen')) {
+    if (config.url?.includes('/auth/login')) {
+      // Do not attach any token for login requests
+      token = null;
+    }
+    else if (config.url?.includes('/kitchen')) {
       token = getStaffToken('kitchen');
     } else if (config.url?.includes('/admin')) {
       token = getStaffToken('admin');
     } else {
-      token = getStaffToken();
+      // For generic endpoints like /auth/me, derive the role from the current page path
+      const path = typeof window !== 'undefined' ? window.location.pathname : '';
+      if (path.startsWith('/kitchen')) {
+        token = getStaffToken('kitchen');
+      } else if (path.startsWith('/admin')) {
+        token = getStaffToken('admin');
+      } else {
+        token = getStaffToken('admin') || getStaffToken('kitchen');
+      }
     }
 
     const joinToken = localStorage.getItem('joinToken'); // for customers
@@ -25,7 +37,7 @@ api.interceptors.request.use(
     if (joinToken) {
       config.headers['x-join-token'] = joinToken;
     }
-    
+
     return config;
   },
   (error) => {
@@ -47,31 +59,31 @@ api.interceptors.response.use(
       // Handle Admin & Kitchen 401 (Invalid/expired JWT token)
       if (path.startsWith('/admin')) {
         clearStaffAuth('admin');
-        if (path !== '/admin/login') {
-          window.location.href = '/admin/login';
+        if (path !== '/' && path !== '/login') {
+          window.location.href = '/';
         }
         return Promise.reject(error);
       }
 
       if (path.startsWith('/kitchen')) {
         clearStaffAuth('kitchen');
-        if (path !== '/kitchen/login' && path !== '/admin/login') {
-          window.location.href = '/kitchen/login';
+        if (path !== '/' && path !== '/login') {
+          window.location.href = '/';
         }
         return Promise.reject(error);
       }
 
       // Handle Customer Session 401
       const isSessionError = error.response.data?.message?.toLowerCase().includes('session') ||
-                            error.response.data?.error?.message?.toLowerCase().includes('session') ||
-                            error.response.data?.error?.message === 'Invalid or expired session token';
-      
+        error.response.data?.error?.message?.toLowerCase().includes('session') ||
+        error.response.data?.error?.message === 'Invalid or expired session token';
+
       if (isSessionError) {
         localStorage.removeItem('sessionId');
         localStorage.removeItem('joinToken');
         localStorage.removeItem('customer');
         localStorage.removeItem('smartserve_cart');
-        
+
         if (!path.startsWith('/admin') && !path.startsWith('/kitchen') && path !== '/') {
           alert('Your dining session has ended. Please scan the QR code to start a new session.');
           window.location.href = '/';
